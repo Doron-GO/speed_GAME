@@ -21,13 +21,13 @@
     <ClCompile Include="Input\Input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Manager\AnimMng.cpp">
+    <ClCompile Include="Manager\AnimMng.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Object\Manager\ImageMng.cpp">
+    <ClCompile Include="Manager\ImageMng.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Player\Player.cpp">
+    <ClCompile Include="Object\Player\Player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Scene\GameScene.cpp">
@@ -60,7 +60,7 @@
     <ClCompile Include="Object\Stage\LoadMap.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Player\Wire.cpp">
+    <ClCompile Include="Object\Player\Wire.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Common\Time.cpp">
@@ -93,7 +93,7 @@
     <ClCompile Include="Object\Item\ItemManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Player\PlayerManager.cpp">
+    <ClCompile Include="Object\Player\PlayerManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Object\Item\Laser.cpp">
@@ -125,13 +125,13 @@
     <ClInclude Include="Input\Input.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Manager\ImageMng.h">
+    <ClInclude Include="Manager\ImageMng.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Object\Manager\AnimMng.h">
+    <ClInclude Include="Manager\AnimMng.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Player\Player.h">
+    <ClInclude Include="Object\Player\Player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Scene\GameScene.h">
@@ -146,10 +146,7 @@
     <ClInclude Include="Src\Json\json.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Vector2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="details\Vector2D.h">
+    <ClInclude Include="Common\Vector2D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="rapidxml\rapidxml_utils.hpp">
@@ -188,7 +185,7 @@
     <ClInclude Include="Object\Stage\LoadMap.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Player\Wire.h">
+    <ClInclude Include="Object\Player\Wire.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Common\Time.h">
@@ -221,7 +218,7 @@
     <ClInclude Include="Object\Item\ItemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Player\PlayerManager.h">
+    <ClInclude Include="Object\Player\PlayerManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Object\Item\Laser.h">
@@ -246,6 +243,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Object\Time\DeltaTime.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\GetAtr.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

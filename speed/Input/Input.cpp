@@ -2,7 +2,6 @@
 #include<cassert>
 #include<algorithm>
 
-
 bool Input::GetCurrentInput(const std::string& input) const
 {
 	auto it = currentState_.find(input);

@@ -1,6 +1,7 @@
-#include "Raycast.h"
-#include"../_debug/_DebugDispOut.h"
 #include<DxLib.h>
+#include"../_debug/_DebugDispOut.h"
+#include "Raycast.h"
+
 bool Raycast::CheckCollision(Ray ray, Collision collision, Vec playerPos)
 {// «ã‰º¶‰E‚Ìˆê•Ó
     Raycast::Line lines[4] = {  

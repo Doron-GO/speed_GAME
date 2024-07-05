@@ -1,10 +1,10 @@
-#include "AnimMng.h"
 #include<sstream>
-#include"../../rapidxml/rapidxml.hpp"
-#include"../../rapidxml/rapidxml_utils.hpp"
-#include"../GetAtr.h"
-#include"ImageMng.h"
-#include"../../Vector2D.h"
+#include "../rapidxml/rapidxml.hpp"
+#include "../rapidxml/rapidxml_utils.hpp"
+#include "../Common/GetAtr.h"
+#include "../Common/Vector2D.h"
+#include "ImageMng.h"
+#include "AnimMng.h"
 
 std::string AnimeMng::LoadAnime(std::string fileName)
 {

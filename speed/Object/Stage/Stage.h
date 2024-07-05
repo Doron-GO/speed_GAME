@@ -1,7 +1,7 @@
 #pragma once
 #include<memory>
 #include"LoadMap.h"
-#include"../../Vector2D.h"
+#include"../../Common/Vector2D.h"
 
 class ItemBox;
 class Player;

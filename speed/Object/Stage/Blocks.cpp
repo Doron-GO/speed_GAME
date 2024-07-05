@@ -1,7 +1,7 @@
 #include "Blocks.h"
 #include"LoadMap.h"
 #include<DxLib.h>
-#include"../Manager/ImageMng.h"
+#include"../../Manager/ImageMng.h"
 
 Blocks::Blocks(LoadMap& loadMap):loadMap_(loadMap)
 {
@@ -42,11 +42,12 @@ void Blocks::Draw(Vector2DFloat cameraPos)
 	{
 		if (block.blockFlag_)
 		{
-			auto min = block.col_.first;
-			auto max = block.col_.second;
-			DrawGraph(min.x+cameraPos.x, max.y + cameraPos.y,
-				ImageMng::GetInstsnce().GetID(loadMap_.GetMapKey())
-				[6], true);
+			Vector2DFloat min = block.col_.first;
+			Vector2DFloat max = block.col_.second;
+			int X = static_cast<int>(min.x + cameraPos.x);
+			int Y = static_cast<int>(max.y + cameraPos.y);
+			DrawGraph(X, Y,
+				ImageMng::GetInstsnce().GetID(loadMap_.GetMapKey())[6], true);
 		}
 	}
 }

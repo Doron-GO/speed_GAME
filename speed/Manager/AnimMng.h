@@ -4,14 +4,12 @@
 #include<string>
 #include<array>
 
-
 constexpr int GraphHD = 0;
 constexpr int InvLimit = 1;
 constexpr int ColLeft = 2;
 constexpr int ColTop = 3;
 constexpr int ColRight = 4;
 constexpr int ColBottom = 5;
-
 
 using AnimeData = std::array<int, 6>;
 using AnimNode = std::pair<int, std::list<AnimeData>>;
@@ -27,12 +25,8 @@ struct AnimStr
 	AnimItr animID_;	//アニメーションの再生位置
 	int animCount_=0;		//当該アニメーションの経過フレーム
 	int animPlayCount_=0;//当該アニメーションの現ループ数
-	bool endFlag;
-
+	bool endFlag = false;
 };
-
-#define lpAnimMng AnimeMng::GetInstance()
-
 
 class AnimeMng
 {
@@ -47,15 +41,12 @@ public:
 	bool UpdateAnime(AnimStr& animCacha);
 	void SetAnime(AnimStr& animDate, std::string state);
 
-
-
-
 private:
+
 	std::map<std::string, AnimNode> animeTbl_;
 
 	AnimeMng();
 	~AnimeMng();
-
 
 };
 

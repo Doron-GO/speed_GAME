@@ -5,11 +5,11 @@
 #include"../Object/Camera/OutSide.h"
 #include"../Object/Camera/Camera.h"
 #include"../Object/Stage/Stage.h"
-#include"../Player/Player.h"
+#include"../Object/Player/Player.h"
 #include"../Input/Input.h"
 #include"../Object/Stage/CheckPoint.h"
 #include"../Object/Shader/PostEfffect.h"
-#include"../Player/PlayerManager.h"
+#include"../Object/Player/PlayerManager.h"
 
 class TimeCount;
 

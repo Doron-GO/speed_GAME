@@ -38,7 +38,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	}
 
 	DxLib_End();
-	//return 0;
+	return 0;
 }
 
 

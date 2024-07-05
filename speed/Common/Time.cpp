@@ -1,7 +1,6 @@
 ﻿#include <chrono>
 #include "Time.h"
 
-
 namespace Default
 {
 	template<class T>

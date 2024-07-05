@@ -1,7 +1,7 @@
 #include<DxLib.h>
 #include "OutSide.h"
 #include"Camera.h"
-#include"../../Player/Player.h"
+#include"../../Object/Player/Player.h"
 #include"DangerZoneSmaller.h"
 
 Vector2DFloat screenSize ={1600.0f,1000.0f};
@@ -14,9 +14,7 @@ maxScale_({800.0f,500.0f}),conclusion_(false)
 	LoadDivGraph("Src/Img/BigExplosion.png",8, 8, 1, 32, 32, bigBombImg_);
 	ExplosionSound_ = LoadSoundMem("Src/Sound/Explosion.mp3");
 	dangerZone_ = std::make_unique<DangerZoneSmaller>(maxScale_, minScale_);
-	_phase = &OutSide::Follow;
-
-	//bombImg_ = LoadGraph("Src/Img/Explosion.png");
+	_state = &OutSide::Follow;
 }
 OutSide::~OutSide()
 {
@@ -24,11 +22,9 @@ OutSide::~OutSide()
 
 void OutSide::Update(std::vector<std::shared_ptr<Player>> players)
 {
-	(this->*_phase)();
+	(this->*_state)();
 	auto &camera = camera_.GetPos();
 
-	//auto target = camera_.GetTargetPos();
-	//auto target = camera_.GetPos();
 	minPos_ = outsidePos_ + minScale_;
 	maxPos_ = outsidePos_ + maxScale_;
 
@@ -38,27 +34,24 @@ void OutSide::Update(std::vector<std::shared_ptr<Player>> players)
 		IsDead(players);
 	}
 	if (isExploding_)
-	{		//lowerは左回り
+	{	//lowerは左回り
 		//画面右上だったら左に行く
 		if (lowerPos_.y <= minPos_.y && lowerPos_.x >= maxPos_.x)
 		{
 			lowerVec_ = { -20.0f ,0.0f };
 			lowerSide_ = SIDE::UP;
-
 		}
 		//画面右下なら上に行く
 		if (lowerPos_.x >= maxPos_.x && lowerPos_.y >= maxPos_.y)
 		{
 			lowerVec_ = { 0.0f,-20.0f };
 			lowerSide_ = SIDE::RIGHT;
-
 		}
 		//画面左下なら右に行く
 		if (lowerPos_.y >= maxPos_.y && lowerPos_.x <= minPos_.x)
 		{
 			lowerVec_ = { 20.0f ,0.0f };
 			lowerSide_ = SIDE::DOWN;
-
 		}
 		//画面左上なら下に行く
 		if ( lowerPos_.x <= minPos_.x &&lowerPos_.y <= minPos_.y)
@@ -66,7 +59,6 @@ void OutSide::Update(std::vector<std::shared_ptr<Player>> players)
 			lowerVec_ = { 0.0f ,20.0f };
 			lowerSide_ = SIDE::LEFT;
 		}
-
 		//画面左上になったら右に行く
 		if (upperPos_.y<= minPos_.y && upperPos_.x <= minPos_.x)
 		{
@@ -147,9 +139,9 @@ void OutSide::Update(std::vector<std::shared_ptr<Player>> players)
 	TestSmaller();
 }
 
-void OutSide::PhaseChanging()
+void OutSide::StateChanging()
 {
-	_phase = &OutSide::Switching;
+	_state = &OutSide::Switching;
 }
 
 void OutSide::Follow()
@@ -165,17 +157,16 @@ void OutSide::Switching()
 	outsidePos_.y = outsideOldPos_.y * (1.0f - time / 60.0f) + camera_.GetTargetPos().y *  time / 60.0f;
 	if (time >= 60.0f)
 	{
-		_phase = &OutSide::Follow;
+		_state = &OutSide::Follow;
 		time = 0.0f;
 	}
 }
 
 void OutSide::Draw(Vector2DFloat offset)
 {
-	auto camera= camera_.GetPos();
-	auto min = (minPos_ + camera);
-	auto max = (maxPos_ + camera);
-	//DrawBoxAA( min.x, min.y, max.x, max.y, 0xff0000, false);
+	Vector2DFloat camera= camera_.GetPos();
+	Vector2DFloat min = (minPos_ + camera);
+	Vector2DFloat max = (maxPos_ + camera);
 
 	if (isExploding_)
 	{
@@ -190,7 +181,6 @@ void OutSide::Draw(Vector2DFloat offset)
 			5.0, 0.0,
 			bigBombImg_[frame_%6],
 			true, 0, 0);
-
 
 		auto bombsDraw = [](std::list<Bomb>& bomb,Vector2DFloat camera,int image[11])
 		{

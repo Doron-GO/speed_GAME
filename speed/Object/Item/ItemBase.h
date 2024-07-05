@@ -1,5 +1,5 @@
 #pragma once
-#include"../../Vector2D.h"
+#include"../../Common/Vector2D.h"
 #include"../../Common/Collision.h"
 #include"../../Common/Raycast.h"
 
@@ -41,7 +41,6 @@ protected:
 	Vector2DFloat targetPos_;
 	bool activateFlag_;
 	bool explosionFlag_;
-	int img_[11];
 	int drawCount_;
 	int count_;
 

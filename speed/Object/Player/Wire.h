@@ -1,7 +1,7 @@
 #pragma once
-#include"../Vector2D.h"
-#include"../Common/Raycast.h"
-#include "../Common/Time.h"
+#include"../../Common/Vector2D.h"
+#include"../../Common/Raycast.h"
+#include "../../Common/Time.h"
 
 class Player;
 
@@ -18,7 +18,7 @@ public:
 	void SetSwingPalam();
 	void SetAnchorPalam();
 
-	//フェーズをEndSwingPhaseにして、player_.EndSwing();
+	//フェーズをEndSwingStateにして、player_.EndSwing();
 	void StartSwingJump(); 
 	void StartSwing(); //スイングフェーズに切り替える関数
 	void EndSwing();//スイングフェーズに切り替える関数
@@ -29,14 +29,7 @@ public:
 
 private:
 
-	void (Wire::* _phase)();
-
-	void SwingPhase();
-	void StandbyPhase();
-	void EndSwingPhase();
-	void AnchoringPhase();
-
-
+	void (Wire::* _state)();
 	ColList col;
 	Time timeManager_;
 
@@ -47,19 +40,19 @@ private:
 	VECTOR fulcrum_pos;//計算用
 	float angle_;
 	VECTOR vel_;
-	float v_;
+	float v_; //大きさ
 	
 	Vector2DFloat moveVec_;
-	Vector2DFloat gravity_;
-	Vector2DFloat yNorm_;			//軸から錘の正規化済み垂直ベクトル
-	
 	VECTOR Scale_;
-
-	float gMag_;			//重力の大きさ
-	float theta_;			//角度
-	float omega_;			//角速度
-	float length_;			//長さ
+	//長さ
+	float length_;
+	//力
 	float pow_;
+
+	void SwingState();
+	void StandbyState();
+	void EndSwingState();
+	void AnchoringState();
 
 };
 

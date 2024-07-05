@@ -3,9 +3,8 @@
 TileTransitor::TileTransitor(int cellSize, int interval) :cellSize_(cellSize),
 Transitor(interval)
 {
-	VECTOR wsize = { 1600,1000 };
-	int xnum = (wsize.x / cellSize_) + 1;
-	int ynum = (wsize.y / cellSize_) + 1;
+	int xnum = static_cast<int>( (sizeX / cellSize_) + 1 );
+	int ynum = static_cast<int>( (sizeY / cellSize_) + 1 );
 	tiles_.reserve(xnum * ynum);
 	for (int yidx = 0; yidx < ynum; ++yidx) {
 		for (int xidx = 0; xidx < xnum; ++xidx) {
@@ -27,9 +26,8 @@ void TileTransitor::Update()
 		return;
 	}
 
-	VECTOR wsize = { 1600,1000 };
-	int xnum = (wsize.x / cellSize_) + 1;
-	int ynum = (wsize.y / cellSize_) + 1;
+	int xnum = static_cast<int>( (sizeX / cellSize_) + 1 );
+	int ynum = static_cast<int>( (sizeY / cellSize_) + 1 );
 	int eraseNum = ((xnum * ynum) / interval_);
 	if (tiles_.size() > eraseNum) {
 		tiles_.erase(tiles_.end() - eraseNum, tiles_.end());
@@ -45,9 +43,8 @@ void TileTransitor::Draw()
 		return;
 	}
 	SetDrawScreen(DX_SCREEN_BACK);
-	VECTOR wsize = { 1600,1000 };
-	auto rate = (float)frame_ / (float)interval_;
-	DrawRectGraph(0, 0, 0, 0, wsize.x, wsize.y, newRT_, true);
+	int rate = static_cast<int>( frame_ / interval_ );
+	DrawRectGraph(0, 0, 0, 0, sizeX, sizeY, newRT_, true);
 	for (const auto& cell : tiles_) {
 		DrawRectGraph(
 			cell.xidx * cellSize_,

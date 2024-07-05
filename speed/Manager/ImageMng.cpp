@@ -20,7 +20,6 @@ const std::vector<int>& ImageMng::GetID(std::string f_name, std::string key)
 
 	}
 	return ImageMap_[key];
-
 }
 
 const std::vector<int>& ImageMng::GetID(std::string f_name, std::string key, Vector2D divSize, Vector2D divCut)

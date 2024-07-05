@@ -1,13 +1,16 @@
 #include<DxLib.h>
-#include "ItemBox.h"
+#include"../../Object/Player/Player.h"
+#include"../../Manager/ImageMng.h"
 #include"../Stage/LoadMap.h"
-#include"../Manager/ImageMng.h"
-#include"../../Player/Player.h"
+#include "ItemBox.h"
+
+const std::string IMG_ITEMBOX_PASS = "Src/Img/ItemBox.png";
+
 
 ItemBox::ItemBox(LoadMap& loadMap,std::vector<std::shared_ptr<Player>> players)
 	:loadMap_(loadMap),players_(players),count_(0)
 {
-	LoadDivGraph("Src/Img/nebula.png", 61, 8, 8, 100, 100, itemBoxImg_);
+	LoadDivGraph(IMG_ITEMBOX_PASS.c_str(), 61, 8, 8, 100, 100, itemBoxImg_);
 }
 
 ItemBox::~ItemBox()
@@ -38,24 +41,15 @@ void ItemBox::Update()
 			{
 				if (player->IsItem() == Player::ItemList::NON)
 				{
-					if (player->TestItem())
-					{
-						player->SetItemList(1);	
-						auto ii = std::make_shared<Missile>();
-						ii->grndColList_ = loadMap_.GetColList();
-						player->SetItem(ii);
-					}
-					else
-					{
-						player->SetItemList(2);
-						auto ii = std::make_shared<Laser>();
-						player->SetItem(ii);
-					}
+					player->SetItemList(1);	
+					auto ii = std::make_shared<Missile>();
+					ii->grndColList_ = loadMap_.GetColList();
+					player->SetItem(ii);
+
 				}
 			}
 		}
 	}
-
 }
 
 bool ItemBox::IsBox(Vector2DFloat pos)

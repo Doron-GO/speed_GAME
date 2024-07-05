@@ -1,6 +1,7 @@
 #pragma once
-#include"../Vector2D.h"
+#include"../Common/Vector2D.h"
 #include"Collision.h"
+
 using Vec = Vector2DFloat;
 
 struct Raycast
@@ -15,6 +16,7 @@ struct Raycast
 		Vec end;//èIì_
 
 	};
+
 	bool CheckCollision(Ray ray, Collision collision , Vec playerPos);
 	bool CheckCollision( Collision collision , Vec playerPos);
 	bool CheckRay(Ray ray, Line line, Vec offset);
@@ -28,8 +30,5 @@ struct Raycast
 	bool LeftSide(Vec Max, Vec Min);
 	bool RightSide(Vec Max, Vec Min);
 
-
-
-	//bool CheckRectangle(Ray ray, Collision collision, Vector2DFloat playerPos)
 };
 

@@ -1,6 +1,5 @@
 #pragma once
 #include<DxLib.h>
-
 #include<string>
 #include<unordered_map>
 #include<vector>
@@ -20,13 +19,6 @@ struct InputInfo {
 	int inputID;
 };
 
-//入力の状態を保持するための構造体
-//struct InputState 
-//{
-//	std::string key;//対象の入力をあらわす文字
-//	bool isPressed=false;//その対象が押されているかどうか
-//
-//};
 
 //ゲーム中の意味と入力されたかどうかをペアにしたもの
 //とにかく対象の「意味」が押されたらああ地がtrueになる型
@@ -43,6 +35,7 @@ class KeyConfigScene;
 class Input
 {
 	friend KeyConfigScene;
+
 private:
 	
 	std::vector<std::string>excludeOnCongigList_;//キーコンフィグ除外リスト
@@ -55,7 +48,6 @@ private:
 	InputState_t lastState_={};//さっき
 	InputState_t currentState_={};//今
 
-
 	//値の代入とコピーの禁止
 	Input(const Input&) = delete;
 	void operator = (const Input&) = delete;
@@ -65,8 +57,10 @@ private:
 	//直前にそのキーが押されているか
 	bool GetLastInput(const std::string& input)const;
 
-
 public:
+
+	DINPUT_JOYSTATE joyDInState_;
+
 	Input();
 	/// <summary>
 	/// キー入力情報を更新する(毎フレーム)
@@ -91,7 +85,6 @@ public:
 	/// <param name="key">命令文字列</param>
 	/// <param name="inputinfo">機器からの入力情報(ハード)</param>
 	void RewriteInput(const std::string& key,const InputInfo& inputinfo);
-
 	void ComitInputConfig();
 
 	//入力テーブル自体を表示する
@@ -106,7 +99,6 @@ public:
 	/// <returns>true:除外入力に当たる,false:当たらない</returns>
 	bool CheckExclusiveInput();
 
-	DINPUT_JOYSTATE joyDInState_;
 
 };
 

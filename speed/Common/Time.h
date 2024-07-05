@@ -3,11 +3,11 @@
 
 class Time
 {
+
 public:
+
 	using DeltaType = float;
-
 	Time();
-
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -35,11 +35,15 @@ public:
 	DeltaType GetTotalTime(void)const;
 
 private:
-	std::chrono::system_clock::time_point now_;		//現在の時間
-	std::chrono::system_clock::time_point old_;		//前フレームの時間
+	//現在の時間
+	std::chrono::system_clock::time_point now_;		
+	//前フレーム時点でのデルフレームの時間
+	std::chrono::system_clock::time_point old_;		
+	//現タ値
+	DeltaType delta_;
+	//進み具合
+	DeltaType rate_;		
+	//総時間
+	DeltaType total_;		
 
-	DeltaType delta_;		//現フレーム時点でのデルタ値
-	DeltaType rate_;		//進み具合
-
-	DeltaType total_;		//総時間
 };

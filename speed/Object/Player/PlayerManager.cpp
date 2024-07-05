@@ -1,19 +1,30 @@
+#include"../../Object/Item/ItemBase.h"
+#include"../../Object/Stage/Blocks.h"
 #include "PlayerManager.h"
 #include "Player.h"
-#include"../Object/Item/ItemBase.h"
-#include"../Object/Stage/Blocks.h"
+
+const std::string IMG_WIN_PASS = "Src/Img/UIimage/Win.png";
+const std::string IMG_RESTART_PASS = "Src/Img/UIimage/Restart.png";
+
 
 PlayerManager::PlayerManager(bool& conclusion, Blocks& blocks):conclusion_(conclusion),
-new_LeadNum_(PLAYER_NUM::P_1), old_LeadNum_(PLAYER_NUM::P_1), last_Num_(PLAYER_NUM::P_1), winner_(0), count_(0), blocks_(blocks)
+blocks_(blocks)
 {
-	winImg_=LoadGraph("Src/Img/UIimage/WIN.png");
-	restertImg_ =LoadGraph("Src/Img/UIimage/RESTERT.png");
+	singlePlay_ = false;
+	winImg_=LoadGraph(IMG_WIN_PASS.c_str());
+	restertImg_ =LoadGraph(IMG_RESTART_PASS.c_str());
+	goalFlag_ = false;
+	newFirstPlayerNum_ = PLAYER_NUM::P_1;
+	oldFirstPlayerNum_ = PLAYER_NUM::P_1;
+	winner_ = 0;
 }
 
 PlayerManager::~PlayerManager()
 {
+	DeleteGraph(winImg_);
+	DeleteGraph(restertImg_);
+	
 }
-
 
 void PlayerManager::Init(int playerNum, ColList gruound, ColList Wall, ColList wire)
 {
@@ -31,10 +42,10 @@ void PlayerManager::Update(Input& input)
 {
 	if (!singlePlay_)
 	{
-		HormingTargrt();
+		SearchHormingPlayer();
 	}
-	ItemCol(); 
-	Conclusion();
+	CollisionItem(); 
+	BattleConclusion();
 	for (const auto& player : players_)
 	{
 		if (player->IsAlive())
@@ -57,7 +68,6 @@ void PlayerManager::Draw(Vector2DFloat cameraPos)
 	if (conclusion_)
 	{
 		DrawRotaGraph2F(800.0f, 300.0f, 200.0f, 20.0f, 2.0, 0.0, winImg_,true);
-		//DrawRotaGraph2F(800.0f, 760.0f, 208.0f, 20.0f, 2.0, 0.0, restertImg_,true);
 	}
 }
 
@@ -71,13 +81,15 @@ const Players PlayerManager::GetPlayers()
 	return players_;
 }
 
-void PlayerManager::DecideOnTheBeginning2(std::pair<bool, Vector2DFloat>checkPoint)
+void PlayerManager::SearchFirstPlayer(std::pair<bool, Vector2DFloat>checkPoint)
 {
-	leadDistance_.clear();
+	checkPointToPlayerDistance_.clear();
+
 	//プレイヤーとチェックポイントとの距離を格納している。
 	for (auto& p : players_)
 	{
-		iD_.first = (p->padNum_) - 1;
+		std::pair<int, float> info;
+		info.first = (p->padNum_) - 1;
 		Vector2DFloat checkPointPos= {0.0f, 0.0f};
 		if (checkPoint.first)
 		{
@@ -87,8 +99,8 @@ void PlayerManager::DecideOnTheBeginning2(std::pair<bool, Vector2DFloat>checkPoi
 		{
 			checkPointPos = {checkPoint.second.x, players_[(p->padNum_) - 1]->GetPos().y}; 
 		}
-		iD_.second = players_[(p->padNum_) - 1]->GetPos().distance(checkPointPos);
-		leadDistance_.push_back(iD_);
+		info.second = players_[(p->padNum_) - 1]->GetPos().distance(checkPointPos);
+		checkPointToPlayerDistance_.push_back(info);
 	}
 	for (auto& p1 : players_)
 	{
@@ -99,24 +111,11 @@ void PlayerManager::DecideOnTheBeginning2(std::pair<bool, Vector2DFloat>checkPoi
 				auto num1 = (p1->padNum_) - 1;
 				auto num2 = (p2->padNum_) - 1;
 				//プレイヤーNがプレイヤーN+1より前だったら、プレイヤーNを先頭にする。 
-				if (leadDistance_[num1].second < leadDistance_[num2].second)
+				if (checkPointToPlayerDistance_[num1].second < checkPointToPlayerDistance_[num2].second)
 				{
-					if (leadDistance_[num1].second < leadDistance_[(int)new_LeadNum_].second)
+					if (checkPointToPlayerDistance_[num1].second < checkPointToPlayerDistance_[(int)newFirstPlayerNum_].second)
 					{
-						new_LeadNum_ = static_cast<PLAYER_NUM>(leadDistance_[num1].first);
-					}
-				}
-				else
-				{//最後尾のプレイヤーが脱落していたらとりあえず別のプレイヤーを最後尾扱いにする
-					if (!(players_[(int)last_Num_]->IsAlive()))
-					{
-						last_Num_ = static_cast<PLAYER_NUM>(leadDistance_[num1].first);
-					}
-					//前最後尾のプレイヤーより後ろだったら
-					if (leadDistance_[(int)last_Num_].second <
-						leadDistance_[num1].second)
-					{
-						last_Num_ = static_cast<PLAYER_NUM>(leadDistance_[num1].first);
+						newFirstPlayerNum_ = static_cast<PLAYER_NUM>(checkPointToPlayerDistance_[num1].first);
 					}
 				}
 			}
@@ -125,29 +124,42 @@ void PlayerManager::DecideOnTheBeginning2(std::pair<bool, Vector2DFloat>checkPoi
 
 }
 
-void PlayerManager::HormingTargrt()
+void PlayerManager::SearchHormingPlayer()
 {
 	for (auto& player1 : players_)
 	{
+		//プレイヤーと他プレイヤー間の距離
+		std::vector< std::pair<int, float>> playerToPlayerDistance;
+
+		std::pair<int, float> info;
+
 		if (!player1->IsAlive())
 		{
-			leadDistance_.clear();
+			checkPointToPlayerDistance_.clear();
 			continue;
 		}
 		for (auto& player2 : players_)
 		{
 			if (player1->padNum_ == player2->padNum_) { continue; }
-			iD_.second = (player2->padNum_) - 1;
-			iD_.first = players_[(player1->padNum_) - 1]->GetPos().distance(player2->GetPos());
-			TTleadDistance_.push_back(iD_);
+			info.second = static_cast<float>(player2->padNum_ - 1);
+
+			int num = player1->padNum_ - 1;
+			size_t size = players_.size() - 1;
+			if (num > size)
+			{
+				num = static_cast<int>(size);
+			}
+			info.first = static_cast<int>(
+				players_[num]->GetPos().distance(player2->GetPos()));
+			playerToPlayerDistance.push_back(info);
 		}
-		auto pp = std::min_element(TTleadDistance_.begin(), TTleadDistance_.end());
+		auto pp = std::min_element(playerToPlayerDistance.begin(), playerToPlayerDistance.end());
 		player1->SetTarget(players_[pp->second]->GetPos());
-		TTleadDistance_.clear();
+		playerToPlayerDistance.clear();
 	}	 
 }
 
-void PlayerManager::Conclusion()
+void PlayerManager::BattleConclusion()
 {
 	if (conclusion_|| goalFlag_)
 	{
@@ -169,13 +181,13 @@ void PlayerManager::Conclusion()
 	}
 }
 
-void PlayerManager::Goal()
+void PlayerManager::SetGoalSingleMode()
 {
 	goalFlag_ = true;
 }
 
 
-void PlayerManager::ItemCol()
+void PlayerManager::CollisionItem()
 {
 	for (auto& player1 :players_)
 	{
@@ -186,7 +198,7 @@ void PlayerManager::ItemCol()
 			auto item = player1->GetItem();
 			auto iCol = item->col_;
 			auto pCol = player2->col_;
-			if (IsItemCollision(pCol.min_, pCol.max_, iCol.min_, iCol.max_))
+			if (IsRectCollision(pCol.min_, pCol.max_, iCol.min_, iCol.max_))
 			{
 				item->End();
 				player2->Damage(item->type_);
@@ -195,57 +207,52 @@ void PlayerManager::ItemCol()
 	}
 }
 
-const PlayerManager:: PLAYER_NUM PlayerManager::GetOldLeadNum()
+const PlayerManager:: PLAYER_NUM PlayerManager::GetOldFirstPlayerNum()
 {
-	return old_LeadNum_;
+	return oldFirstPlayerNum_;
 }
 
-const PlayerManager:: PLAYER_NUM PlayerManager::GetNewLeadNum()
+const PlayerManager:: PLAYER_NUM PlayerManager::GetNewFirstPlayerNum()
 {
-	return new_LeadNum_;
+	return newFirstPlayerNum_;
 }
 
-const PlayerManager:: PLAYER_NUM PlayerManager::GetLastLeadNum()
+void PlayerManager::UpdateFirstPlayerNum()
 {
-	return last_Num_;
+	oldFirstPlayerNum_ = newFirstPlayerNum_;
 }
 
-void PlayerManager::SetOld()
+bool PlayerManager::IsRectCollision(Vec pMin, Vec pMax, Vec iMin, Vec iMax)
 {
-	old_LeadNum_ = new_LeadNum_;
-}
-
-bool PlayerManager::IsItemCollision(Vec pMin, Vec pMax, Vec iMin, Vec iMax)
-{
-	if (RightSide(pMax, iMin)&& LeftSide(iMax, pMin)&&
-		TopSide(pMax, iMin)&& DownSide(iMax, pMin))
+	if (IsCollisionRightSide(pMax, iMin)&& IsCollisionLeftSide(iMax, pMin)&&
+		IsCollisionTopSide(pMax, iMin)&& IsCollisionDownSide(iMax, pMin))
 	{	
 		return true;
 	}
 	return false;
 }
 
-bool PlayerManager::TopSide(Vec Max, Vec Min)
+bool PlayerManager::IsCollisionTopSide(Vec Max, Vec Min)
 {
 	return (Max.y<=Min.y);
 }
 
-bool PlayerManager::DownSide(Vec Max, Vec Min)
+bool PlayerManager::IsCollisionDownSide(Vec Max, Vec Min)
 {
 	return (Max.y <= Min.y);
 }
 
-bool PlayerManager::LeftSide(Vec Max, Vec Min)
+bool PlayerManager::IsCollisionLeftSide(Vec Max, Vec Min)
 {
 	return (Min.x <= Max.x);
 }
  
-bool PlayerManager::RightSide(Vec Max, Vec Min)
+bool PlayerManager::IsCollisionRightSide(Vec Max, Vec Min)
 {
 	return (Min.x <= Max.x);
 }
 
-void PlayerManager::SinglePlay()
+void PlayerManager::SetSinglePlayMode()
 {
 	singlePlay_ = true;
 }

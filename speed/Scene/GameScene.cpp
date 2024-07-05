@@ -2,30 +2,27 @@
 #include "GameScene.h"
 #include "TitleScene.h"
 #include "SceneMng.h"
-#include"../Object/Manager/ImageMng.h"
+#include"../Manager/ImageMng.h"
 #include"Transition/TileTransitor.h"
 #include"../Object/Time/TimeCount.h"
 #include"../Object/Time/DeltaTime.h"
 
-
 GameScene::GameScene(SceneMng& manager, int n, Transitor& transit):Scene(manager, n, transit), playerNum_(n),_update(&GameScene::MultiPlayUpdate),num_(0)
 {
-
 	sceneTransitor_.Start();
 	camera_ = std::make_unique<Camera>();	
 	stage_ = std::make_unique<Stage>();
 	outSide_ = std::make_unique<OutSide>(*camera_, playerNum_);
 	playerManager_ = std::make_unique<PlayerManager>(outSide_->conclusion_, *stage_->GetBlocks());
 	playerManager_->Init(playerNum_, stage_->GetColList(), stage_->GetWallColList(), stage_->GetWireColList());
-	//camera_->Init(stage_->GetWorldArea() * stage_-> GetTileSize());//カメラを初期化
 	stage_->Init(playerManager_->GetPlayers());
 	checkPoint_ = std::make_unique<CheckPoint>(playerManager_->GetPlayers(), stage_->CheckPointGetColList());
 	timeCount_ = std::make_unique<TimeCount>(*checkPoint_);
-	camera_->ReConnect(playerManager_->GetPlayers()[(int)playerManager_->GetNewLeadNum()]);
+	camera_->ReConnect(playerManager_->GetPlayers()[(int)playerManager_->GetNewFirstPlayerNum()]);
 	if (playerNum_ ==1)
 	{
 		outSide_->SinglePlay();
-		playerManager_->SinglePlay();
+		playerManager_->SetSinglePlayMode();
 		checkPoint_->SetSingleMode();
 		_update = &GameScene::SinglePlayUpdate;
 		timeCount_->SinglePlay();
@@ -88,8 +85,6 @@ void GameScene::Update(Input& input)
 		}
 	}
 	sceneTransitor_.Update();
-
-
 }
 
 void GameScene::Draw()
@@ -100,8 +95,7 @@ void GameScene::Draw()
 	outSide_->Draw(camera_->GetPos());
 	playerManager_->Draw(camera_->GetPos());
 	checkPoint_->Draw(camera_->GetPos());
-	auto newLeder = playerManager_->GetNewLeadNum();
-	auto Last = playerManager_->GetLastLeadNum();
+	auto newLeder = playerManager_->GetNewFirstPlayerNum();
 	timeCount_->Draw();
 	auto elapsed = deltaTime.GetElapsedTime();
 
@@ -112,9 +106,8 @@ void GameScene::Draw()
 			PlaySoundMem(sound_[0], DX_PLAYTYPE_BACK, true);
 		}
 
-		DrawRotaGraph2F(screenSize_.x / 2.0f,0.0f+ (screenSize_.y / 3.0f) - elapsed * 40,
+		DrawRotaGraph2F(screenSize_.x / 2.0f, 0.0f+ (screenSize_.y / 3.0f) - elapsed * 40,
 			288.0f,33.0f, 2.0f, 0.0f, ReadyImg_, true);
-
 	}
 
 	if (!(startTime_ + 1.5f > elapsed) && elapsed <= startTime_ + 2.0f)
@@ -144,25 +137,23 @@ void GameScene::Draw()
 		}
 	}
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-
 	sceneTransitor_.Draw();
 }
 
 void GameScene::DecideOnTheBeginning()
 {
-	playerManager_->DecideOnTheBeginning2(checkPoint_->GetCheckPoint2());
-	auto newLeder= playerManager_->GetNewLeadNum();
-	auto oldLeder =playerManager_->GetOldLeadNum();
+	playerManager_->SearchFirstPlayer(checkPoint_->GetCheckPoint2());
+	auto newLeder= playerManager_->GetNewFirstPlayerNum();
+	auto oldLeder =playerManager_->GetOldFirstPlayerNum();
 	//前のフレームの先頭プレイヤーと今の先頭プレイヤーが違っていたら、
 	//カメラ追従対象を変更する。
 	if (oldLeder != newLeder)
 	{
 		camera_->ReConnect(playerManager_->GetPlayers()[(int)newLeder]);
-		camera_->PhaseChanging((int)newLeder);
-		outSide_->PhaseChanging();
+		camera_->StateChanging((int)newLeder);
+		outSide_->StateChanging();
 	}
-	playerManager_->SetOld();
+	playerManager_->UpdateFirstPlayerNum();
 }
 
 void GameScene::MultiPlayUpdate(Input& input, float elapsedTime)
@@ -189,7 +180,7 @@ void GameScene::SinglePlayUpdate(Input& input, float elapsedTime)
 		timeCount_->Update(elapsedTime);
 		if (checkPoint_->IsGoal())
 		{
-			playerManager_->Goal();
+			playerManager_->SetGoalSingleMode();
 		}
 		checkPoint_->Update();
 		playerManager_->Update(input);

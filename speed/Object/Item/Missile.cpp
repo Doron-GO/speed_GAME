@@ -1,5 +1,9 @@
 #include<DxLib.h>
+#include<string>
 #include "Missile.h"
+
+const std::string ITEM_IMG_MISSILE_PASS = "Src/Img/Missile.png";
+const std::string EXP_IMG_EXPLOSION_PASS = "Src/Img/Explosion.png";
 
 Missile::Missile()
 {
@@ -8,41 +12,40 @@ Missile::Missile()
 	_update = &Missile::WaitUpdate;
 	_draw = &Missile::MissileDraw;
 	type_ = ITEM_TYPE::MISSILE;
-	LoadDivGraph("Src/Img/Explosion.png", 11, 11, 1, 32, 31, img_);
-	missileImg_ = LoadGraph("Src/Img/alamo.png");
+	LoadDivGraph(EXP_IMG_EXPLOSION_PASS.c_str(), 11, 11, 1, 32, 31, explosionImg_);
+	
+	missileImg_ = LoadGraph(ITEM_IMG_MISSILE_PASS.c_str());
 	explosionFlag_ = false;
 	activateFlag_ = false;
-
 }
 
 Missile::~Missile()
 {
+	DeleteGraph(missileImg_);
+	for (int num = 0; num < EXPLOSION_IMG_NUM; num++)
+	{
+		DeleteGraph(explosionImg_[num]);
+	}
 
 }
 
 void Missile::Update()
 {
 	(this->*_update)();
-	col_.min_ = { itemPos_.x - 20.0f,itemPos_.y + 20.0f };
-	col_.max_ = { itemPos_.x + 20.0f,itemPos_.y - 20.0f };
+	col_.min_ = { itemPos_.x - MISSIL_COLISION_OFFSET,itemPos_.y + MISSIL_COLISION_OFFSET };
+	col_.max_ = { itemPos_.x + MISSIL_COLISION_OFFSET,itemPos_.y - MISSIL_COLISION_OFFSET };
 }
 
 
 void Missile::Draw(Vector2DFloat offset)
 {
-	float deg = atan2f(vel_.y, vel_.x);
-	auto rad = 90 * (DX_PI_F / 180.0f);
-	auto angle = deg + rad;
-	if (activateFlag_)
-	{
-		DrawRotaGraph2F(itemPos_.x + offset.x, itemPos_.y + offset.y, 4, 10, 3.0, angle, missileImg_, true);
-	}
 	(this->*_draw)(offset);
 }
 
 void Missile::Activate(Vector2DFloat playerpos)
 {
 	_update = &Missile::ActivateUpdate;
+	_draw = &Missile::MissileDraw;
 	itemPos_ = playerpos;
 	activateFlag_ = true;
 }
@@ -90,25 +93,25 @@ void Missile::IsCollision()
 
 void Missile::ExplosionDraw(Vector2DFloat offset)
 {
-		//DrawGraph(itemPos_.x + offset.x,
-		//	(itemPos_.y + offset.y),
-		//	img_[(count_ / 3) % 11], true);
 	DrawRotaGraph2F(itemPos_.x + offset.x, itemPos_.y + offset.y,
 		20.0f, 20.0f,
 		2.5, 0.0,
-		img_[(drawCount_ / 3) % 11],
+		explosionImg_[(drawCount_ / 3) % 11],
 		true);
-
 	if (drawCount_++ >= 29)
 	{	
 		drawCount_ =0;
 		explosionFlag_ = false;
 	}
-
 }
 
 void Missile::MissileDraw(Vector2DFloat offset)
 {
+	float deg = atan2f(vel_.y, vel_.x);
+	auto rad = 90 * (DX_PI_F / 180.0f);
+	auto angle = deg + rad;
+	DrawRotaGraph2F(itemPos_.x + offset.x, itemPos_.y + offset.y, 4, 10, 3.0, angle, missileImg_, true);
+
 }
 
 

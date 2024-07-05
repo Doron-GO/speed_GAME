@@ -1,5 +1,5 @@
 #pragma once
-#include"../../Vector2D.h"
+#include"../../Common/Vector2D.h"
 #include"../../Common/Collision.h"
 #include<vector>
 #include<list>
@@ -8,7 +8,6 @@
 class Camera;
 class DangerZoneSmaller;
 class Player;
-
 
 enum class SIDE
 {
@@ -31,17 +30,15 @@ struct Bomb
 
 class OutSide
 {
+
 public:
 
-
-
-	
 	OutSide(Camera& camera, int playerCount);
 	~OutSide();
-	void (OutSide::* _phase)();
+	void (OutSide::* _state)();
 
 	void Update(std::vector< std::shared_ptr<Player >> players);
-	void PhaseChanging();
+	void StateChanging();
 
 	//ÉJÉÅÉâí«è]èÛë‘
 	void Follow();

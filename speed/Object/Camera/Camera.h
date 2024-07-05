@@ -2,7 +2,7 @@
 #include<memory>
 #include<Dxlib.h>
 #include<vector>
-#include"../../Vector2D.h"
+#include"../../Common/Vector2D.h"
 
 class Player;
 
@@ -10,6 +10,7 @@ static constexpr float MAXFRAME =60.0f;
 
 class Camera
 {
+
 public:
 
 	Camera();
@@ -18,7 +19,7 @@ public:
 	void Update();
 
 	//ƒJƒƒ‰‚Ìó‘Ô‚ğ•Ï‚¦‚é
-	void PhaseChanging(int num);
+	void StateChanging(int num);
 
 	bool ReConnect(std::weak_ptr<Player> actor);
 	const Vector2DFloat& GetPos(void)const;
@@ -28,7 +29,7 @@ private:
 	float time = 0;
 
 	int nextNum_=0;
-	void (Camera::* _phase)();
+	void (Camera::* _state)();
 	//’Ç]‘ÎÛ•ÏX’†
 	void Switching();
 	//ƒJƒƒ‰’Ç]ó‘Ô

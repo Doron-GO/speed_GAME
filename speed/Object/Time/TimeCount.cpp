@@ -36,7 +36,7 @@ void TimeCount::GoalDraw()
 	if (elapsedTime_>= record_ +2.0f)
 	{
 		//DrawRotaGraph2F(800.0f, 700.0f, 208.0f, 20.0f, 1.0, 0.0, restertImg_, true);
-		DrawFormatStringToHandle(500.0f, 600.0f, 0xff0000, fontHandle_, "RECORD:%f", record_);
+		DrawFormatStringToHandle(500, 600, 0xff0000, fontHandle_, "RECORD:%f", record_);
 		endFlag_ = true;
 	}
 }
@@ -64,13 +64,13 @@ void TimeCount::GameDraw()
 
 void TimeCount::SingleDraw()
 {
-	DrawFormatStringToHandle(0.0f, 0.0f, 0xff0000, fontHandle_, "RECORD:%f", elapsedTime_);
+	DrawFormatStringToHandle(0, 0, 0xff0000, fontHandle_, "RECORD:%f", elapsedTime_);
 
 }
 
 void TimeCount::SetStart()
 {
-	oldTime_ = GetNowHiPerformanceCount();
+	oldTime_ = static_cast<float>( GetNowHiPerformanceCount() );
 }
 
 bool TimeCount::IsEnd()
@@ -85,7 +85,7 @@ float TimeCount::ElapsedTime()
 
 void TimeCount::Count()
 {
-	nowTime_ = GetNowHiPerformanceCount();
+	nowTime_ = static_cast<float>( GetNowHiPerformanceCount() );
 	deltaTime_ = (nowTime_ - oldTime_) / 1000000.0f;
 	oldTime_ = nowTime_;
 	elapsedTime_ += deltaTime_;

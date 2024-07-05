@@ -22,11 +22,15 @@ public:
 
 
 private:
+    static constexpr int EXPLOSION_IMG_NUM = 11;
+    static constexpr float MISSIL_COLISION_OFFSET= 20.0f;
 
     void (Missile::* _update)();
     void (Missile::* _draw)(Vector2DFloat offset);
 
     Vector2DFloat vel_;
     int missileImg_;
+    int explosionImg_[EXPLOSION_IMG_NUM];
+
 };
 

@@ -1,7 +1,10 @@
 #pragma once
 #include<string>
+#include "../rapidxml/rapidxml.hpp"
+#include "../rapidxml/rapidxml_utils.hpp"
 
 class GetAtr {
+
 public:
 
 	bool operator()(rapidxml::xml_node<>* node, std::string atrName, float& num)
@@ -16,7 +19,7 @@ public:
 			//TRACE("アトリビュートの取得エラー:%s\n", atrName.c_str());
 			return false;
 		}
-		num = atof(atrstr->value());
+		num = static_cast<float>( atof(atrstr->value()) );
 		return true;
 
 	}

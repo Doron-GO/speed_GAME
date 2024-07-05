@@ -1,9 +1,10 @@
-#include "Camera.h"
-#include"../../Player/Player.h"
 #include<algorithm>
+#include "Camera.h"
+#include"../../Object/Player/Player.h"
 
-Camera::Camera(): _phase (& Camera::Follow)
+Camera::Camera(): _state (& Camera::Follow)
 {
+    moveArea_ = { 0,0,0,0 };
 }
 
 Camera::~Camera()
@@ -12,12 +13,12 @@ Camera::~Camera()
 
 void Camera::Init(const Vector2D& worldSize)
 {
-    //_phase = &Camera::Follow;
+    //_State = &Camera::Follow;
 }
 
 void Camera:: Update()
 {
-    (this->*_phase)();
+    (this->*_state)();
 }
 
 void Camera::Switching()
@@ -31,15 +32,15 @@ void Camera::Switching()
     cameraPos_.y = oldPos_.y * (1.0f - time / MAXFRAME) + offset.y * time / MAXFRAME;
     if (time >= MAXFRAME)
     {
-        _phase = &Camera::Follow;
+        _state = &Camera::Follow;
         time = 0.0f;
     }
 }
 
-void Camera::PhaseChanging(int num)
+void Camera::StateChanging(int num)
 {
     nextNum_ = num;
-    _phase = &Camera::Switching;
+    _state = &Camera::Switching;
 }
 
 void Camera::Follow()

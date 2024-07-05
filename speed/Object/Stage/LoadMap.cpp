@@ -2,7 +2,7 @@
 #include<DxLib.h>
 #include<fstream>
 #include <stdlib.h>
-#include"../Manager/ImageMng.h"
+#include"../../Manager/ImageMng.h"
 
 bool LoadMap::LoadTSX(std::string fileName)
 {
@@ -130,7 +130,6 @@ bool LoadMap::SetMap()
 	auto& itemBoxCol = json_["layers"][4]["objects"];
 	auto& checkPointCol = json_["layers"][5]["objects"];
 	auto& checkBlockCol = json_["layers"][6]["objects"];
-	//auto& checkPointCol = json_["layers"][6]["objects"];
 
 	LoadCol(col, colList_);
 	LoadCol(wallCol, WallCollList_);

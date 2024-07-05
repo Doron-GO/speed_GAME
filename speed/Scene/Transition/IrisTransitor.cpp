@@ -1,6 +1,5 @@
 #include <math.h>
 #include <DxLib.h>
-
 #include "IrisTransitor.h"
 
 IrisTransitor::IrisTransitor(bool irisOut, int interval, bool isTiled, int gHandle) 
@@ -8,11 +7,11 @@ IrisTransitor::IrisTransitor(bool irisOut, int interval, bool isTiled, int gHand
 {
 	//ウィンドウサイズ
 	VECTOR screenSize = { 1600,1000 };
-
 	//マスクレイヤーの作成
-	handleForMaskScreen_ = MakeScreen(screenSize.x, screenSize.y, true);
+	int X = static_cast<int>( screenSize.x);
+	int Y = static_cast<int>( screenSize.y);
+	handleForMaskScreen_ = MakeScreen(X, Y, true);
 	maskH_ = CreateMaskScreen();
-
 	//ウィンドウの対角線の長さ
 	diagonalLength_ = hypotf(screenSize.x, screenSize.y) / 2.0f;
 }

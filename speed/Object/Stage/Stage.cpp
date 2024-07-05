@@ -1,7 +1,7 @@
 #include <DxLib.h>
 #include "Stage.h"
-#include"../Manager/ImageMng.h"
-#include "../../Player/Player.h"
+#include"../../Manager/ImageMng.h"
+#include"../../Object/Player/Player.h"
 #include"../../Object/Item/ItemBox.h"
 #include"Blocks.h"
 
@@ -19,7 +19,6 @@ Stage::~Stage()
 
 void Stage::Init(std::vector<std::shared_ptr<Player>> players) 
 {
-	//tmxObj_.LoadTSX("./tmx/stage.tmx");
 	itemBox_ = std::make_unique<ItemBox>(loadMap_, players);
 	backImg_ = LoadGraph("Src/Img/Stageimage/siro.png");
 }
@@ -36,9 +35,13 @@ void Stage::Draw(Vector2DFloat cameraPos)
 		0.0f, 0.0f,
 		10.0, 0.0,backImg_, 0);
 
-	auto &worldArea = loadMap_.GetWorldArea();
-	const auto &tileSize = loadMap_.GetTileSize();
-	auto& mapData = loadMap_.GetMapData();
+	const Vector2D &worldArea = loadMap_.GetWorldArea();
+	const Vector2D&tileSize = loadMap_.GetTileSize();
+	const MapData & mapData = loadMap_.GetMapData();
+	int X = static_cast<int> (tileSize.x );
+	int Y = static_cast<int> (tileSize.y );
+	int cameraX = static_cast<int> (cameraPos.x);
+	int cameraY = static_cast<int> ( cameraPos.y);
 	for (const auto& layer : loadMap_.GetMapData()) 
 	{
 		for (int y = 0; y < worldArea.y; y++)
@@ -50,8 +53,7 @@ void Stage::Draw(Vector2DFloat cameraPos)
 					auto gid = layer.second[x + y * worldArea.x];
 					if (gid >= 0&& !(gid==5)&&!(gid == 6))
 					{
-						DrawGraph(x * tileSize.x+ cameraPos.x,
-							(y * tileSize.y + cameraPos.y),
+						DrawGraph(x *X + cameraX, y *Y+ cameraY,
 							ImageMng::GetInstsnce().GetID(loadMap_.GetMapKey())
 							[gid], true);
 					}
@@ -62,29 +64,6 @@ void Stage::Draw(Vector2DFloat cameraPos)
 
 	itemBox_->Draw(cameraPos);
 	blocks_->Draw(cameraPos);
-	//for ( auto& line : loadMap_.GetColList())
-	//{
-	//	auto first = line.first;
-	//	auto second = line.second;
-	//	Line lines[4] = {
-	//		//è„ÇÃï”   
-	//		{first + cameraPos,
-	//		(first + cameraPos) + Vector2DFloat{second.x,0} },
-	//		//âEï”
-	//		{(first + cameraPos) + Vector2DFloat{second.x,0} ,
-	//		first + line.second + cameraPos },
-	//		//â∫ÇÃï”
-	//		{ first + second + cameraPos,
-	//		first + Vector2DFloat{0,second.y } + cameraPos },
-	//		//ç∂ï”
-	//		{first + Vector2DFloat{0,second.y} + cameraPos ,
-	//		first + cameraPos }
-	//	};
-	//	for (auto line : lines)
-	//	{
-	//		DrawLine(line.p.x, line.p.y, line.end.x, line.end.y, 0x00ff00);
-	//	}
-	//}
 }
 
 const  Vector2D& Stage::GetWorldArea()

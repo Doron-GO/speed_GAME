@@ -1,5 +1,5 @@
 #include "CheckPoint.h"
-#include "../../Player/Player.h"
+#include"../../Object/Player/Player.h"
 
 CheckPoint::CheckPoint(std::vector<std::shared_ptr<Player>> players, PointColList checkpoint)
 	:players_(players), checkPointColList2_(checkpoint), GoalFlag_(false),_work(&CheckPoint::MultiPlay)
