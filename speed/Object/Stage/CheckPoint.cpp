@@ -2,7 +2,7 @@
 #include"../../Object/Player/Player.h"
 
 CheckPoint::CheckPoint(std::vector<std::shared_ptr<Player>> players, PointColList checkpoint)
-	:players_(players), checkPointColList2_(checkpoint), GoalFlag_(false),_work(&CheckPoint::MultiPlay)
+	:players_(players), checkPointColList_(checkpoint), goalFlag_(false),_work(&CheckPoint::MultiPlay)
 {
 
 	//ˆê”Ô‰E
@@ -23,7 +23,7 @@ CheckPoint::CheckPoint(std::vector<std::shared_ptr<Player>> players, PointColLis
 	checkPoints3_.push_back(CHECKPOINT{ true,{0.0f,3000.0f} });
 
 
-	currentPoint_ = 0;
+	currentCheckPoint_ = 0;
 }
 
 CheckPoint::~CheckPoint()
@@ -36,8 +36,8 @@ void CheckPoint::Update()
 	{
 		if (player->IsAlive())
 		{
-			if (rayCast_.RectToRectCollision(checkPointColList2_[currentPoint_].first, checkPointColList2_[currentPoint_].second,
-			player->col_.min_, player->col_.max_))
+			if (rayCast_.RectToRectCollision(checkPointColList_[currentCheckPoint_].first, checkPointColList_[currentCheckPoint_].second,
+			player->colRect_.min_, player->colRect_.max_))
 			{
 				(this->*_work)();
 				break;
@@ -68,17 +68,17 @@ void CheckPoint::Draw(Vector2DFloat pos)
 
 Vector2DFloat CheckPoint::GetCheckPoint() const
 {
-	return checkPoints_[currentPoint_];
+	return checkPoints_[currentCheckPoint_];
 }
 
 CHECKPOINT CheckPoint::GetCheckPoint2() const
 {
-	return checkPoints3_[currentPoint_];
+	return checkPoints3_[currentCheckPoint_];
 }
 
 const bool CheckPoint::IsGoal()
 {
-	return GoalFlag_;
+	return goalFlag_;
 }
 
 void CheckPoint::SetSingleMode()
@@ -88,19 +88,22 @@ void CheckPoint::SetSingleMode()
 
 void CheckPoint::SinglePlay()
 {
-	if (currentPoint_ < CHECKPOINT_MAX) { currentPoint_++; }
+	if (currentCheckPoint_ < CHECKPOINT_MAX)
+	{ 
+		currentCheckPoint_++; 
+	}
 	else
 	{
-		GoalFlag_ = true;
-		currentPoint_ = 0;
+		goalFlag_ = true;
+		currentCheckPoint_ = 0;
 	}
 }
 
 void CheckPoint::MultiPlay()
 {
-	if (currentPoint_ < CHECKPOINT_MAX) { currentPoint_++; }
+	if (currentCheckPoint_ < CHECKPOINT_MAX) { currentCheckPoint_++; }
 	else
 	{
-		currentPoint_ = 0;
+		currentCheckPoint_ = 0;
 	}
 }

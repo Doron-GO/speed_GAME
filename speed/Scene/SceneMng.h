@@ -35,7 +35,8 @@ public:
 
 private:
 
-	std::list<std::shared_ptr<Scene>> scenes_;//現在進行中のシーン
+	//現在進行中のシーン
+	std::list<std::shared_ptr<Scene>> scenes_;
 
 
 };

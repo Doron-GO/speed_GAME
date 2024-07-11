@@ -141,52 +141,52 @@ bool LoadMap::SetMap()
 	return true;
 }
 
-const ColList& LoadMap::GetColList(void)
+const ColList& LoadMap::GetColList(void)const
 {
 	return colList_;
 }
 
-const ColList& LoadMap::WallGetColList(void)
+const ColList& LoadMap::WallGetColList(void)const
 {
 	return WallCollList_;
 }
 
-const ColList& LoadMap::WireGetColList(void)
+const ColList& LoadMap::WireGetColList(void) const
 {
 	return WireCollList_;
 }
 
-const ColList& LoadMap::itemBoxGetColList(void)
+const ColList& LoadMap::itemBoxGetColList(void)const
 {
 	return itemBoxCollList_;
 }
 
-const ColList& LoadMap::BlockGetColList(void)
+const ColList& LoadMap::BlockGetColList(void)const
 {
 	return blockCollList_;
 }
 
-const PointColList& LoadMap::CheckPointGetColList(void)
+const PointColList& LoadMap::CheckPointGetColList(void)const
 {
 	return checkPointCollList_;
 }
 
-const Vector2D& LoadMap::GetWorldArea(void)
+const Vector2D& LoadMap::GetWorldArea(void)const
 {
 	return  WorldArea_;
 }
 
-const Vector2D& LoadMap::GetTileSize(void)
+const Vector2D& LoadMap::GetTileSize(void)const
 {
 	return  tileSize_;
 }
 
-const MapData& LoadMap::GetMapData(void)
+const MapData& LoadMap::GetMapData(void)const
 {
 	return  mapData;
 }
 
-const std::string& LoadMap::GetMapKey(void)
+const std::string& LoadMap::GetMapKey(void)const
 {
 	return  mapKey_;
 }

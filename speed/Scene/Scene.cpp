@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include<DxLib.h>
-Scene::Scene(SceneMng& scene,int n,Transitor& transit ):sceneManager_(scene),sceneTransitor_(transit)
+Scene::Scene(SceneMng& scene,int number_of_Players,Transitor& transit ):sceneManager_(scene),sceneTransitor_(transit)
 {
 
 }

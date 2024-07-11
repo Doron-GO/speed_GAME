@@ -10,7 +10,7 @@ class Transitor;
 class Scene
 {
 public:
-	Scene(SceneMng& scene,int n ,Transitor& transit);
+	Scene(SceneMng& scene,int number_of_Players,Transitor& transit);
 	virtual ~Scene() {};
 	virtual void Update(Input& input) = 0;
 	virtual void Draw() ;

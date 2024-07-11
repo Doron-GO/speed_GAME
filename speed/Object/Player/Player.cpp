@@ -1,42 +1,53 @@
 #include<DxLib.h>
 #include<string>
-#include "Player.h"
-#include"Wire.h"
-#include"../../Manager/ImageMng.h"
-#include"../../_debug/_DebugConOut.h"
 #include"../../_debug/_DebugDispOut.h"
+#include"../../_debug/_DebugConOut.h"
+#include"../../Manager/ImageMng.h"
+#include"../../Config.h"
+#include"Player.h"
+#include"Wire.h"
 
 
-const std::string EXP_SOUND_EXPLOSION_PASS = "Src/Sound/Explosion.mp3";
-const std::string EXP_SOUND_LAUNCHER_PASS = "Src/Sound/Launcher.mp3";
-const std::string EXP_IMG_EXPLOSION_PASS = "Src/Img/BigExplosion.png";
-const std::string ITEM_IMG_MISSILE_PASS = "Src/Img/Missile.png";
+#pragma region MyRegion
 
-Player::Player(int playerNum, Blocks& blocks):dir_LR_(DIR_LR::RIGHT)
-, padNum_(playerNum),  blocks_(blocks), _state(& Player::MoveState),
-_damage (&Player::Nothing)
+const std::string PATH_SOUND_EXPLOSION_ = PATH_SOUND +"Explosion.mp3";
+const std::string PATH_SOUND_LAUNCHER = PATH_SOUND+"Launcher.mp3";
+const std::string PATH_IMG_EXPLOSION = PATH_IMG + "BigExplosion.png";
+const std::string PATH_IMG_ITEM_MISSILE = PATH_IMG + "Missile.png";
+
+#pragma endregion
+
+Player::Player(int playerNum, Blocks& blocks):padNum_(playerNum),  blocks_(blocks)
 {
 	damageCount_ = 0;
 	missileImg_=0;
 	expCount_=0;
 	slideY_ = -35.0f;
+
+	aliveFlag_= true;
+	winFlag_ = false;
 	AnchoringFlag_ = false;
 	doubleJump_ = true;
-	//爆発音
-	explosionSounds_.emplace(EXP_SOUND_TYPE::EXPLOSION,LoadSoundMem(EXP_SOUND_EXPLOSION_PASS.c_str()));
-	explosionSounds_.emplace(EXP_SOUND_TYPE::LAUNCHER, LoadSoundMem(EXP_SOUND_LAUNCHER_PASS.c_str()));
-	state_=STATE::FALL;
-	aliveFlag_= true;
-	itemList_ = ItemList::NON;
 	winFlag_ = false;
-	LoadDivGraph(EXP_IMG_EXPLOSION_PASS.c_str(), 8, 8, 1, 32, 32, explosionImg_);
+
+	//爆発音
+	explosionSounds_.emplace(EXP_SOUND_TYPE::EXPLOSION,LoadSoundMem(PATH_SOUND_EXPLOSION_.c_str()));
+	explosionSounds_.emplace(EXP_SOUND_TYPE::LAUNCHER, LoadSoundMem(PATH_SOUND_LAUNCHER.c_str()));
+
+	LoadDivGraph(PATH_IMG_EXPLOSION.c_str(), 8, 8, 1, 32, 32, explosionImg_);
+	missileImg_ = LoadGraph(PATH_IMG_ITEM_MISSILE.c_str());
+
 	item_ = std::make_shared<ItemBase>();
+
 	moveVec_ = { 0.0f,0.0f};
 	movePow_ = { 0.0f,0.0f};
 	up_ = { 0.0f,-50.0f };
+
+	itemList_ = ItemList::NON;
+	dir_LR_ = DIR_LR::RIGHT;
+
 	_state = &Player::MoveState;
 	_damage = &Player::Nothing;
-	missileImg_ = LoadGraph(ITEM_IMG_MISSILE_PASS.c_str());
 
 }
 
@@ -55,7 +66,7 @@ void Player::Init(ColList colList, ColList wallColList, ColList wireColList)
 	pos_ = { START_PLAYER_POSITION.x-padNum_*-20.0f,START_PLAYER_POSITION.y };
 	grndColList_ = colList;
 	wallcolList_ = wallColList;
-	//ベストな方法ではないかもだけど、Padナンバーを使ってactlistを変える
+
 	 char num = '0'+padNum_;
 	 std::string act = "Src/Img/actList/act";//string文字列を作る
 	 act += num;						 //	文字列を連結
@@ -76,6 +87,7 @@ void Player::Update(Input& input)
 	{
 		return;
 	}
+
 	(this->*_damage)();
 	(this->*_state)(input_);
 	BlocksCollision();
@@ -87,11 +99,9 @@ void Player::Update(Input& input)
 		Anchoring(input_);
 		wire_->Update();
 		ItemUse();	
-	}	
-	if (!(itemList_ == ItemList::NON))
-	{
-		item_->Update();
 	}
+
+	ItemUpdate();
 	if (!IsSwingState())
 	{
 		pos_.y += movePow_.y;
@@ -132,7 +142,7 @@ void Player::Draw(Vector2DFloat cameraPos)
 			1.5, 0.0,
 			ImageMng::GetInstsnce().GetID(animeStr_.imgKey_)[(*animeStr_.animID_)[GraphHD]],
 			true, static_cast<int>(dir_LR_), 0);
-		TesItemDraw(cameraPos);
+		ItemDraw(cameraPos);
 	}
 		
 	switch (itemList_)
@@ -150,7 +160,6 @@ void Player::Draw(Vector2DFloat cameraPos)
 		now_Item_ = "LASER";
 		break;
 	}
-	DebugStateCheck();
 	wire_->Draw(cameraPos);
 
 }
@@ -170,47 +179,14 @@ const Vector2DFloat Player::GetMoveVec()
 	return moveVec_;
 }
 
-const Vector2DFloat  Player::GetMovePow()
-{
-	return movePow_;
-}
-
 void Player::StartSwingJump()
 {
-	_state = &Player::SwingJumpPhese;
+	_state = &Player::SwingJumpState;
 }
 
-void Player::DebugStateCheck()
-{
-	switch (state_)
-	{
-	case Player::STATE::FALL:
-		nowState_ = "FallState";
-		break;
-	case Player::STATE::JUMP:
-		nowState_ = "JumpState";
-		break;
-	case Player::STATE::MOVE:
-		nowState_ = "MoveState";
-		break;
-	case Player::STATE::WALLGRAB:
-		nowState_ = "WallSlideState";
-		break;
-	case Player::STATE::WALLJUMP:
-		nowState_ = "WallJumpState";
-		break;
-	case Player::STATE::SWING:
-		nowState_ = "SwingState";
-		break;
-	case Player::STATE::SWINGJUMP:
-		nowState_ = "SwingJumpState";
-		break;
-	}
-}
 
 void Player::MoveState(Input& input)
 {
-	state_ = Player::STATE::MOVE;
 	//もし床がなかったらフォールにする
 	if (CollisionDown())
 	{
@@ -247,7 +223,6 @@ void Player::DamageMissile()
 
 void Player::JumpState(Input& input)
 {
-	state_ = Player::STATE::JUMP;
 
 	AnimeMng::GetInstance().SetAnime(animeStr_, "Jump");
 
@@ -271,6 +246,15 @@ void Player::JumpState(Input& input)
 		//movePow_.y += -0.2f;
 		movePow_.y += -1.0f;
 	}
+}
+
+void Player::ItemUpdate(void)
+{
+	if (!(itemList_ == ItemList::NON))
+	{
+		item_->Update();
+	}
+
 }
 
 void Player::FallState(Input& input)
@@ -298,7 +282,6 @@ void Player::FallState(Input& input)
 	}
 	//CollisionDown
 	//落下速度が一定を超えたら決まった値にする
-	state_ = Player::STATE::FALL;
 	AnimeMng::GetInstance().SetAnime(animeStr_, "Fall");
 }
 
@@ -307,9 +290,8 @@ void Player::DamageState(Input& input)
 
 }
 
-void Player::WallGrabPhese(Input& input)
+void Player::WallGrabState(Input& input)
 {
-	state_ = Player::STATE::WALLGRAB;
 	diagonallyVec_ = { moveVec_.x,slideY_ };
 	Jump(input);	
 	Vector2DFloat movecec = { 0.0f,movePow_.y };
@@ -331,7 +313,7 @@ void Player::WallGrabPhese(Input& input)
 		}
 	}
 	//壁にくっついていなかったらフォール状態に移行する
-	if (!(_state == &Player::WallJumpPhese))
+	if (!(_state == &Player::WallJumpState))
 	{
 		if (!IsWall())
 		{
@@ -347,9 +329,8 @@ void Player::WallGrabPhese(Input& input)
 	//もし地面に足がついたら
 }
 
-void Player::WallJumpPhese(Input& input)
+void Player::WallJumpState(Input& input)
 {
-	state_ = Player::STATE::WALLJUMP;
 	AnimeMng::GetInstance().SetAnime(animeStr_, "Jump");
 	diagonallyVec_ = { moveVec_.x,slideY_ };
 	Vector2DFloat movevec = { 0.0f,-40.0f };
@@ -372,13 +353,12 @@ void Player::WallJumpPhese(Input& input)
 	if (IsWall())
 	{
 		movePow_.x = 0.0f;
-		_state = &Player::WallGrabPhese;
+		_state = &Player::WallGrabState;
 	}
 }
 
-void Player::SwingPhese(Input& input)
+void Player::SwingState(Input& input)
 {
-	state_ = Player::STATE::SWING;
 	Vector2DFloat movevec = { 0.0f,1.0f };
 	if (!CollisionVec(movevec))
 	{
@@ -396,7 +376,7 @@ void Player::SwingPhese(Input& input)
 	{
 		movePow_.y =0.0f;
 		movePow_.x = 0.0f;
-		_state = &Player::WallGrabPhese;
+		_state = &Player::WallGrabState;
 		wire_->ChangeStandby();
 	}
 	if (!CollisionVec(diagonallyVec_))
@@ -417,7 +397,7 @@ void Player::SwingPhese(Input& input)
 	}
 	if (CollisionDown())
 	{
-		if (_state == &Player::SwingPhese)
+		if (_state == &Player::SwingState)
 		{	
 			if (input.IsPrassed("hook"))
 			{
@@ -434,10 +414,9 @@ void Player::SwingPhese(Input& input)
 	}
 }
 
-void Player::SwingJumpPhese(Input& input)
+void Player::SwingJumpState(Input& input)
 {
 	Jump(input);
-	state_ = Player::STATE::SWINGJUMP;
 	AnimeMng::GetInstance().SetAnime(animeStr_, "Fall");
 	//落下速度が一定を超えたら決まった値にする
 	if (movePow_.y >= 14.0f)
@@ -477,12 +456,12 @@ void Player::SwingJumpPhese(Input& input)
 }
 
 
-void Player::WinnerPhese(Input& input)
+void Player::WinnerState(Input& input)
 {
 	AnimeMng::GetInstance().SetAnime(animeStr_, "Win");
 }
 
-void Player::WinnerFallPhese(Input& input)
+void Player::WinnerFallState(Input& input)
 {
 	if (!CollisionVec(up_))
 	{
@@ -498,7 +477,7 @@ void Player::WinnerFallPhese(Input& input)
 		movePow_ = { 0.0f,0.0f };
 		pos_.y = landingPos_.y;
 		doubleJump_ = true;
-		_state = &Player::WinnerPhese;
+		_state = &Player::WinnerState;
 		PlaySoundMem(explosionSounds_[EXP_SOUND_TYPE::EXPLOSION], DX_PLAYTYPE_BACK, true);
 		winFlag_ = true;
 	}
@@ -509,13 +488,13 @@ void Player::Conclusion()
 	if (_state == &Player::MoveState)
 	{
 		movePow_ = { 0.0f,0.0f };
-		_state = &Player::WinnerPhese;
+		_state = &Player::WinnerState;
 		PlaySoundMem(explosionSounds_[EXP_SOUND_TYPE::EXPLOSION], DX_PLAYTYPE_BACK, true);
 		winFlag_ = true;
 	}
 	else
 	{
-		_state = &Player::WinnerFallPhese;
+		_state = &Player::WinnerFallState;
 	}
 }
 
@@ -523,7 +502,7 @@ void Player::MoveColision()
 {
 	diagonallyVec_ = { moveVec_.x,slideY_ };
 	//壁つかまり状態の判定
-	if (!(_state == &Player::MoveState) && !(_state == &Player::WallGrabPhese))
+	if (!(_state == &Player::MoveState) && !(_state == &Player::WallGrabState))
 	{
 		if (IsWall() && CollisionDown())
 		{
@@ -533,7 +512,7 @@ void Player::MoveColision()
 				movePow_.y = -abs(movePow_.x / 1.5f);
 			}
 			movePow_.x = 0.0f;
-			_state = &Player::WallGrabPhese;
+			_state = &Player::WallGrabState;
 		}
 	}
 	//壁に当たったら加速度を０にする 1:自分の前方 2:上斜め前 
@@ -567,12 +546,12 @@ void Player::MoveColision()
 
 bool Player::IsWinner(void)
 {
-	return ((_state == &Player::WinnerPhese) || (_state == &Player::WinnerFallPhese));
+	return ((_state == &Player::WinnerState) || (_state == &Player::WinnerFallState));
 }
 
 bool Player::IsSwingState(void)
 {
-	return (_state == &Player::SwingPhese);
+	return (_state == &Player::SwingState);
 }
 
 bool Player::CollisionDown()
@@ -651,17 +630,18 @@ void Player::BlocksCollision()
 {
 	for (auto& block:blocks_.GetBlockList())
 	{
-		if (block.blockFlag_)
+		if (!block.blockFlag_)
 		{
-
-			if (rayCast_.RectToRectCollision(col_.min_, col_.max_,
-				block.col_.first, block.col_.second))
-			{
-				block.blockFlag_ = false;
-				movePow_.x= 0.0f;
-				movePow_.y /= 4.0f;
-			}
+			continue;
 		}
+		if (rayCast_.RectToRectCollision(colRect_.min_, colRect_.max_,
+			block.col_.first, block.col_.second))
+		{
+			block.blockFlag_ = false;
+			movePow_.x= 0.0f;
+			movePow_.y /= 4.0f;
+		}
+		
 	}
 
 }
@@ -675,11 +655,6 @@ void Player::Dead()
 {
 	pos_ = { 0.0f,0.0f };
 	aliveFlag_ = false;
-}
-
-void Player::Alive()
-{
-	aliveFlag_ = true;
 }
 
 bool Player::IsAlive()
@@ -702,7 +677,7 @@ void Player::SetItem(std::shared_ptr <ItemBase> item)
 	item_ = item;
 }
 
-void Player::TesItemDraw(Vector2DFloat cameraPos)
+void Player::ItemDraw(Vector2DFloat cameraPos)
 {
 	if (item_->IsActivate()|| item_->IsExplosion())
 	{
@@ -789,7 +764,7 @@ void Player::Move(Input& input)
 	if (!input.IsPrassed("c"))
 	{		
 
-		if (!(_state == &Player::WallJumpPhese)&& !(_state == &Player::SwingPhese))
+		if (!(_state == &Player::WallJumpState)&& !(_state == &Player::SwingState))
 		{
 			//右キー
 			if (input.IsPrassed("right"))
@@ -806,10 +781,10 @@ void Player::Move(Input& input)
 				moveVec_ = { -20.0f,-15.0f };
 			}
 		}
-		col_.min_ = { pos_.x - 10.0f,pos_.y };
-		col_.max_ = { pos_.x + 15.0f,pos_.y - 40.0f };
+		colRect_.min_ = { pos_.x - 10.0f,pos_.y };
+		colRect_.max_ = { pos_.x + 15.0f,pos_.y - 40.0f };
 
-		if(_state == &Player::SwingJumpPhese)
+		if(_state == &Player::SwingJumpState)
 		{
 			//移動速度が一定を超えると最大速度に固定する
 			if (movePow_.x <= -12.0f) { movePow_.x = -12.0f;}
@@ -827,13 +802,13 @@ void Player::Move(Input& input)
 	MoveColision();
 	//落下中じゃないとき
 	if (!(_state == &Player::FallState)&&!(_state == &Player::JumpState) &&
-		!(_state == &Player::SwingJumpPhese))
+		!(_state == &Player::SwingJumpState))
 	{
 		//スライディングボタンが押されていたら
 		if (input.IsPrassed("c"))
 		{
-			col_.min_ = { pos_.x - 10.0f,pos_.y };
-			col_.max_ = { pos_.x + 15.0f,pos_.y-20.0f };
+			colRect_.min_ = { pos_.x - 10.0f,pos_.y };
+			colRect_.max_ = { pos_.x + 15.0f,pos_.y-20.0f };
 			AnimeMng::GetInstance().SetAnime(animeStr_, "Slide");
 			//スライディング中は減速する
 			if (movePow_.x > 0.0f) 
@@ -877,7 +852,7 @@ void Player::Anchoring(Input& input)
 			slideY_ = -35.0f;
 			if (CollisionDown() && CollisionVec(moveVec_) && CollisionVec(diagonallyVec_))
 			{
-				if (!(_state == &Player::SwingPhese) && !(_state == &Player::WallGrabPhese))
+				if (!(_state == &Player::SwingState) && !(_state == &Player::WallGrabState))
 				{
 					AnimeMng::GetInstance().SetAnime(animeStr_, "Jump");
 					wire_->SetAnchorPalam();
@@ -887,7 +862,7 @@ void Player::Anchoring(Input& input)
 		}
 	}
 	//スイングステートではないときに、ボタンが押され続けていたらワイヤーを伸ばす
-	if (!(_state == &Player::SwingPhese)&&AnchoringFlag_)
+	if (!(_state == &Player::SwingState)&&AnchoringFlag_)
 	{
 		if (input.IsPrassed("hook"))
 		{
@@ -904,7 +879,7 @@ void Player::Anchoring(Input& input)
 
 void Player::StartSwing()
 {
-	_state = &Player::SwingPhese;
+	_state = &Player::SwingState;
 	AnchoringFlag_ = false;
 }
 
@@ -914,7 +889,7 @@ void Player::Jump(Input& input)
 	if (input.IsTriggerd("jump"))
 	{
 		//壁すり状態なら壁ジャンプ
-		if ((_state == &Player::WallGrabPhese))
+		if ((_state == &Player::WallGrabState))
 		{		
 			movePow_.y = 0.0f;
 			AnimeMng::GetInstance().SetAnime(animeStr_, "Jump");
@@ -929,7 +904,7 @@ void Player::Jump(Input& input)
 				dir_LR_ = DIR_LR::LEFT;
 			}
 			movePow_.x = 0.0f;
-			_state = &Player::WallJumpPhese;
+			_state = &Player::WallJumpState;
 		}
 		else if(!(_state == &Player::FallState))//違うなら通常ジャンプ
 		{
@@ -937,7 +912,7 @@ void Player::Jump(Input& input)
 			movePow_.y = 0.0f;
 			_state = &Player::JumpState;
 		}
-		if (((_state == &Player::FallState)|| (_state == &Player::SwingJumpPhese))&&doubleJump_)
+		if (((_state == &Player::FallState)|| (_state == &Player::SwingJumpState))&&doubleJump_)
 		{
 			AnimeMng::GetInstance().SetAnime(animeStr_, "Jump");
 			movePow_.y = 0.2f;

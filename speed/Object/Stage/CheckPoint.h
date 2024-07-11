@@ -33,14 +33,22 @@ private:
 
 	void (CheckPoint::* _work)();
 	std::vector<std::shared_ptr<Player>> players_;
-	std::vector<Vector2DFloat> checkPoints_;
-	CHECKPOINTS checkPoints3_;
-	PointColList checkPointColList_;//チェックポイント当たり判定
-	Raycast rayCast_;
-	PointColList checkPointColList2_;
-	int currentPoint_;
 
-	int GoalFlag_;
+	std::vector<Vector2DFloat> checkPoints_;
+
+	CHECKPOINTS checkPoints3_;
+
+	//
+	Raycast rayCast_;
+
+	//チェックポイント当たり判定リスト
+	PointColList checkPointColList_;
+
+	//次に向かうチェックポイントナンバー
+	int currentCheckPoint_;
+
+	//プレイヤーがゴールしたかどうか
+	int goalFlag_;
 
 };
 

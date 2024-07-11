@@ -2,15 +2,16 @@
 #include"../../Object/Player/Player.h"
 #include"../../Manager/ImageMng.h"
 #include"../Stage/LoadMap.h"
+#include"../../Config.h"
 #include "ItemBox.h"
 
-const std::string IMG_ITEMBOX_PASS = "Src/Img/ItemBox.png";
+const std::string PATH_IMG_ITEMBOX = PATH_IMG+"ItemBox.png";
 
 
 ItemBox::ItemBox(LoadMap& loadMap,std::vector<std::shared_ptr<Player>> players)
 	:loadMap_(loadMap),players_(players),count_(0)
 {
-	LoadDivGraph(IMG_ITEMBOX_PASS.c_str(), 61, 8, 8, 100, 100, itemBoxImg_);
+	LoadDivGraph(PATH_IMG_ITEMBOX.c_str(), 61, 8, 8, 100, 100, itemBoxImg_);
 }
 
 ItemBox::~ItemBox()
@@ -37,7 +38,7 @@ void ItemBox::Update()
 		for (const auto& col : loadMap_.itemBoxGetColList())
 		{
 			//if (rayCast_.CheckCollision(col, player->pos_))
-			if (rayCast_.RectToRectCollision(player->col_.min_, player->col_.max_,col.first, col.second ))
+			if (rayCast_.RectToRectCollision(player->colRect_.min_, player->colRect_.max_,col.first, col.second ))
 			{
 				if (player->IsItem() == Player::ItemList::NON)
 				{

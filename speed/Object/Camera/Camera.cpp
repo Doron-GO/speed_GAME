@@ -4,17 +4,13 @@
 
 Camera::Camera(): _state (& Camera::Follow)
 {
-    moveArea_ = { 0,0,0,0 };
+    float time = 0;
 }
 
 Camera::~Camera()
 {
 }
 
-void Camera::Init(const Vector2D& worldSize)
-{
-    //_State = &Camera::Follow;
-}
 
 void Camera:: Update()
 {
@@ -27,19 +23,18 @@ void Camera::Switching()
     Vector2DFloat offset;
     offset.x = (view.x / 4.0f) * 2.0f - target_.lock()->GetPos().x;
     offset.y = (view.y / 2.0f) - (target_.lock()->GetPos().y);
-    if (time <= MAXFRAME){time++;}
-    cameraPos_.x = oldPos_.x * (1.0f - time / MAXFRAME) + offset.x * time / MAXFRAME;
-    cameraPos_.y = oldPos_.y * (1.0f - time / MAXFRAME) + offset.y * time / MAXFRAME;
-    if (time >= MAXFRAME)
+    if (switchTime_ <= MAXFRAME){switchTime_++;}
+    cameraPos_.x = oldPos_.x * (1.0f - switchTime_ / MAXFRAME) + offset.x * switchTime_ / MAXFRAME;
+    cameraPos_.y = oldPos_.y * (1.0f - switchTime_ / MAXFRAME) + offset.y * switchTime_ / MAXFRAME;
+    if (switchTime_ >= MAXFRAME)
     {
         _state = &Camera::Follow;
-        time = 0.0f;
+        switchTime_ = 0.0f;
     }
 }
 
 void Camera::StateChanging(int num)
 {
-    nextNum_ = num;
     _state = &Camera::Switching;
 }
 
@@ -51,11 +46,6 @@ void Camera::Follow()
     offset.y = (view.y / 2.0f) - target_.lock()->GetPos().y;
     cameraPos_ = offset;
     oldPos_ = cameraPos_;
-}
-
-void Camera::Zoom()
-{
-    //std::clamp(,,,)
 }
 
 bool Camera::ReConnect(std::weak_ptr<Player> actor)

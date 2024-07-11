@@ -19,16 +19,16 @@ public:
 
 	bool SetMap();
 
-	const ColList& GetColList(void);
-	const ColList& WallGetColList(void);
-	const ColList& WireGetColList(void);
-	const ColList& itemBoxGetColList(void);
-	const ColList& BlockGetColList(void);
-	const PointColList& CheckPointGetColList(void);
-	const Vector2D& GetWorldArea(void);
-	const Vector2D& GetTileSize(void);
-	const  MapData& GetMapData(void);
-	const std::string& GetMapKey(void);
+	const ColList& GetColList(void)const;
+	const ColList& WallGetColList(void)const;
+	const ColList& WireGetColList(void)const;
+	const ColList& itemBoxGetColList(void)const;
+	const ColList& BlockGetColList(void)const;
+	const PointColList& CheckPointGetColList(void)const;
+	const Vector2D& GetWorldArea(void)const;
+	const Vector2D& GetTileSize(void)const;
+	const  MapData& GetMapData(void)const;
+	const std::string& GetMapKey(void)const;
 	
 private:
 	Vector2D layerSize_;

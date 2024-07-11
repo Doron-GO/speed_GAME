@@ -3,6 +3,7 @@
 #include "Raycast.h"
 
 bool Raycast::CheckCollision(Ray ray, Collision collision, Vec playerPos)
+
 {// «ã‰º¶‰E‚Ìˆê•Ó
     Raycast::Line lines[4] = {  
 

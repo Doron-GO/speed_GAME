@@ -6,6 +6,7 @@
 
 //入力種別
 enum class InputType {
+
 	keybord,//キーボード
 	gamepad,//ゲームパッド
 	mouse	//マウス

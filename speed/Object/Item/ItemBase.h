@@ -2,6 +2,7 @@
 #include"../../Common/Vector2D.h"
 #include"../../Common/Collision.h"
 #include"../../Common/Raycast.h"
+#include"../../Config.h"
 
 class ItemBase
 {

@@ -3,24 +3,30 @@
 #include"../../Manager/ImageMng.h"
 #include"../../Object/Player/Player.h"
 #include"../../Object/Item/ItemBox.h"
+#include"../../Config.h"
 #include"Blocks.h"
+
+const std::string PATH_IMG_BACK = PATH_SOUND + PATH_IMG+"Stageimage/siro.png";
+const std::string PATH_JSON_TSX = PATH_SOUND + PATH_IMG+"stageTSX_.json";
+const std::string PATH_JSON_STAGE = PATH_SOUND + PATH_IMG+"stage_2.json";
 
 Stage::Stage() 
 {	
-	loadMap_.LoadTSX("Src/Json/stageTSX_.json");
-	loadMap_.LoadStage("Src/Json/stage_2.json");
+	loadMap_.LoadTSX(PATH_JSON_TSX.c_str());
+	loadMap_.LoadStage(PATH_JSON_STAGE.c_str());
 	blocks_ = std::make_unique<Blocks>(loadMap_);
 
 }
 
 Stage::~Stage()
 {
+	DeleteGraph(backImg_);
 }
 
 void Stage::Init(std::vector<std::shared_ptr<Player>> players) 
 {
 	itemBox_ = std::make_unique<ItemBox>(loadMap_, players);
-	backImg_ = LoadGraph("Src/Img/Stageimage/siro.png");
+	backImg_ = LoadGraph(PATH_IMG_BACK.c_str());
 }
 
 void Stage::Update()
@@ -66,37 +72,37 @@ void Stage::Draw(Vector2DFloat cameraPos)
 	blocks_->Draw(cameraPos);
 }
 
-const  Vector2D& Stage::GetWorldArea()
+const  Vector2D& Stage::GetWorldArea()const
 {
 	return loadMap_.GetWorldArea();
 }
 
-const  Vector2D& Stage::GetTileSize()
+const  Vector2D& Stage::GetTileSize()const
 {
 	return loadMap_.GetTileSize();
 }
 
-const  std::string& Stage::GetMapKey()
+const  std::string& Stage::GetMapKey()const
 {
 	return loadMap_.GetMapKey();
 }
 
-const ColList& Stage::GetColList(void)
+const ColList& Stage::GetColList(void)const
 {
 	return loadMap_.GetColList();
 }
 
-const ColList& Stage::GetWallColList(void)
+const ColList& Stage::GetWallColList(void)const
 {
 	return loadMap_.WallGetColList();
 }
 
-const ColList& Stage::GetWireColList(void)
+const ColList& Stage::GetWireColList(void) const
 {
 	return loadMap_.WireGetColList();
 }
 
-const PointColList& Stage::CheckPointGetColList(void)
+const PointColList& Stage::CheckPointGetColList(void)const
 {
 	return loadMap_.CheckPointGetColList();
 }

@@ -1,16 +1,9 @@
 #include "DangerZoneSmaller.h"
 
-Vector2DFloat Min;
-Vector2DFloat Max;
-
-DangerZoneSmaller::DangerZoneSmaller(Vector2DFloat& max, Vector2DFloat& min)
-	:outSideMax_(max),outSideMin_(min),count_(0)
+DangerZoneSmaller::DangerZoneSmaller(Vector2DFloat& max, Vector2DFloat& min):outSideMax_(max),outSideMin_(min)
 {
-	Min = { 200.0f,200.0f };
-	Max = { 1400.0f,800.0f };
-	scaleMin_ = {-200.0f,-150.0f};
-	scaleMax_ = {200.0f,150.0f};
 	_update = &DangerZoneSmaller::UpdateWait;
+	count_ = 0;
 }
 
 DangerZoneSmaller::~DangerZoneSmaller()
@@ -19,12 +12,10 @@ DangerZoneSmaller::~DangerZoneSmaller()
 
 void DangerZoneSmaller::Smaller()
 {
-	if (outSideMax_ >= scaleMax_&& outSideMin_<= scaleMin_)
+	if (outSideMax_ >= MAX_SHRINK_SIZE && outSideMin_<= -MAX_SHRINK_SIZE)
 	{
-		Vector2DFloat Vec = { 0.2f, 0.13f };
-		outSideMax_-= Vec;
-		outSideMin_ += Vec;
-		//count_++;
+		outSideMax_-= SCALE_STEP;
+		outSideMin_ += SCALE_STEP;
 	}
 }
 
@@ -35,8 +26,8 @@ void DangerZoneSmaller::Update()
 
 void DangerZoneSmaller::UpdateWait()
 {
-	auto pp = (count_ / 10);
-	if (pp>= 100)
+	auto count = (count_ / 10);
+	if (count>= SHRINK_START_TIME)
 	{
 		Activated();
 	}

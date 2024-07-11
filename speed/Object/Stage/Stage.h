@@ -23,13 +23,13 @@ public:
 	void Update();
 	void Draw(Vector2DFloat cameraPos);
 
-	const  Vector2D& GetWorldArea();
-	const  Vector2D& GetTileSize();
-	const std::string& GetMapKey();
-	const ColList& GetColList(void);
-	const ColList& GetWallColList(void);
-	const ColList& GetWireColList(void);
-	const PointColList& CheckPointGetColList(void);
+	const  Vector2D& GetWorldArea()const;
+	const  Vector2D& GetTileSize()const;
+	const std::string& GetMapKey()const;
+	const ColList& GetColList(void)const;
+	const ColList& GetWallColList(void)const;
+	const ColList& GetWireColList(void)const;
+	const PointColList& CheckPointGetColList(void)const;
 	const  std::unique_ptr<Blocks> &GetBlocks();
 private:
 

@@ -5,20 +5,42 @@
 #include"Transition/TileTransitor.h"
 #include"../Object/Time/DeltaTime.h"
 
-TitleScene::TitleScene(SceneMng& manager, int n, Transitor& transit) :Scene(manager,n,transit),
-num_(1),startFlag_(false)
+#pragma region MyRegion
+
+const std::string PATH_SOUND_CURSOR = PATH_SOUND + "Cursor.mp4";
+const std::string PATH_SOUND_PUSH = PATH_SOUND + "Push.mp4";
+const std::string PATH_IMG_PLAYER_NUM_SELECT = PATH_UI + "Number_of_Players.png";
+const std::string PATH_IMG_TITLE = PATH_UI + "Start.png";
+const std::string PATH_IMG_START = PATH_UI + "Number_of_Players.png";
+
+#pragma endregion
+
+
+
+TitleScene::TitleScene(SceneMng& manager, int number_of_Players, Transitor& transit) :Scene(manager, number_of_Players,transit),
+playModeNum_(1),startFlag_(false)
 {
 	sceneTransitor_.Start();
-	titleImg_ = LoadGraph("Src/Img/UIimage/Title.png");
-	startImg_ = LoadGraph("Src/Img/UIimage/start.png");
-	LoadDivGraph("Src/Img/UIimage/Select.png", 4, 1, 4, 266, 36,selectImg_);
-	soundH_[0] = LoadSoundMem("Src/Sound/カーソル移動5.mp3");
-	soundH_[1] = LoadSoundMem("Src/Sound/決定ボタンを押す33.mp3");
+	titleImg_ = LoadGraph(PATH_IMG_TITLE.c_str());
+	startImg_ = LoadGraph(PATH_IMG_START.c_str());
+	LoadDivGraph(PATH_IMG_PLAYER_NUM_SELECT.c_str(), 4, 1, 4, 266, 36, selectImg_);
+
+	sounds_.emplace(SOUND_TYPE::CURSOR,LoadSoundMem(PATH_SOUND_CURSOR.c_str()));
+	sounds_.emplace(SOUND_TYPE::PUSH,LoadSoundMem(PATH_SOUND_PUSH.c_str()));
 
 }
 
 TitleScene::~TitleScene()
 {
+	for (int num = 0; num < 4; num++)
+	{
+		DeleteGraph(selectImg_[num]);
+	}
+	for (auto& sound : sounds_)
+	{
+		DeleteSoundMem(sound.second);
+	}
+	sounds_.clear();
 }
 
 void TitleScene::Update(Input& input)
@@ -28,26 +50,26 @@ void TitleScene::Update(Input& input)
 	{
 		if (input.IsTriggerd("down"))
 		{
-			if (num_ < GetJoypadNum())
+			if (playModeNum_ < GetJoypadNum())
 			{
-				num_++;
-				PlaySoundMem(soundH_[0], DX_PLAYTYPE_BACK);
+				playModeNum_++;
+				PlaySoundMem(sounds_[SOUND_TYPE::CURSOR], DX_PLAYTYPE_BACK);
 			}
 		}
 		if (input.IsTriggerd("up"))
 		{
-			PlaySoundMem(soundH_[0], DX_PLAYTYPE_BACK);
-			if (num_ > 1)
+			PlaySoundMem(sounds_[SOUND_TYPE::CURSOR], DX_PLAYTYPE_BACK);
+			if (playModeNum_ > 1)
 			{
-				num_--;
+				playModeNum_--;
 			}
 		}
 		if (input.IsTriggerd("c"))
 		{
 			if (startFlag_)
 			{
-				PlaySoundMem(soundH_[1], DX_PLAYTYPE_BACK);
-				sceneManager_.ChangeScene(std::make_shared<GameScene>(sceneManager_, num_, sceneTransitor_));
+				PlaySoundMem(sounds_[SOUND_TYPE::PUSH], DX_PLAYTYPE_BACK);
+				sceneManager_.ChangeScene(std::make_shared<GameScene>(sceneManager_, playModeNum_, sceneTransitor_));
 				return;
 			}
 		}
@@ -57,25 +79,21 @@ void TitleScene::Update(Input& input)
 		if (input.IsTriggerd("c"))
 		{
 			startFlag_ = true;
-			PlaySoundMem(soundH_[1], DX_PLAYTYPE_BACK);
+			PlaySoundMem(sounds_[SOUND_TYPE::PUSH], DX_PLAYTYPE_BACK);
 
 		}
 	}
-
 	sceneTransitor_.Update();
 }
 
 void TitleScene::Draw()
 {	
-
 	ClearDrawScreen();
 	if (!startFlag_)
 	{
 		DrawGraph(0, 0, titleImg_, true);
 	}
 
-//	DrawFormatString(0, 200, 0xffffff, "%d",num_);
-	//DrawRotaGraph2F(800.0f, 560.0f, 208.0f, 20.0f, 1.0, 0.0, restertImg_, true);
 	if (startFlag_)
 	{
 		DrawRotaGraph2F(800.0f, 800.0f, 350.0f, 20.0f, 1.0, 0.0, startImg_, true);
@@ -83,7 +101,7 @@ void TitleScene::Draw()
 		for (int num=0;num<GetJoypadNum();num++)
 		{
 
-			if ((num+1 == num_))
+			if ((num+1 == playModeNum_))
 			{						
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	

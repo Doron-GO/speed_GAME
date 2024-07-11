@@ -7,8 +7,7 @@ const std::string IMG_WIN_PASS = "Src/Img/UIimage/Win.png";
 const std::string IMG_RESTART_PASS = "Src/Img/UIimage/Restart.png";
 
 
-PlayerManager::PlayerManager(bool& conclusion, Blocks& blocks):conclusion_(conclusion),
-blocks_(blocks)
+PlayerManager::PlayerManager(bool& conclusion, Blocks& blocks):conclusion_(conclusion),blocks_(blocks)
 {
 	singlePlay_ = false;
 	winImg_=LoadGraph(IMG_WIN_PASS.c_str());
@@ -167,16 +166,16 @@ void PlayerManager::BattleConclusion()
 		{
 			if (player->IsAlive())
 			{
-				winner_ = player->padNum_;
+				winner_ = player->padNum_ -1;
 			}
 			else
 			{
 				continue;
 			}
 		}
-		if (!players_[winner_ - 1]->IsWin())
+		if (!players_[winner_ ]->IsWin())
 		{
-			players_[winner_-1]->Conclusion();
+			players_[winner_]->Conclusion();
 		}
 	}
 }
@@ -186,18 +185,21 @@ void PlayerManager::SetGoalSingleMode()
 	goalFlag_ = true;
 }
 
-
 void PlayerManager::CollisionItem()
 {
 	for (auto& player1 :players_)
 	{
-		if (!(player1->GetItem()->IsActivate())) { continue; }
+		//アイテム使用状態でなければ抜ける
+		if (!(player1->GetItem()->IsActivate()))
+		{ 
+			continue;
+		}
 		for (auto& player2 : players_)
 		{
 			if (player1->padNum_ == player2->padNum_) { continue; }
 			auto item = player1->GetItem();
 			auto iCol = item->col_;
-			auto pCol = player2->col_;
+			auto pCol = player2->colRect_;
 			if (IsRectCollision(pCol.min_, pCol.max_, iCol.min_, iCol.max_))
 			{
 				item->End();

@@ -162,7 +162,6 @@
     <ClCompile Include="Object\Camera\OutSide.cpp" />
     <ClCompile Include="Object\Item\ItemBase.cpp" />
     <ClCompile Include="Object\Item\ItemBox.cpp" />
-    <ClCompile Include="Object\Item\ItemManager.cpp" />
     <ClCompile Include="Object\Item\Laser.cpp" />
     <ClCompile Include="Object\Item\Missile.cpp" />
     <ClCompile Include="Manager\AnimMng.cpp" />
@@ -178,7 +177,6 @@
     <ClCompile Include="Object\Player\PlayerManager.cpp" />
     <ClCompile Include="Object\Player\Wire.cpp" />
     <ClCompile Include="Scene\GameScene.cpp" />
-    <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="Scene\SceneMng.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
@@ -194,6 +192,7 @@
     <ClInclude Include="Common\Raycast.h" />
     <ClInclude Include="Common\Time.h" />
     <ClInclude Include="Common\Vector2D.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Input\Input.h" />
     <ClInclude Include="Object\Camera\Camera.h" />
     <ClInclude Include="Object\Camera\DangerZoneSmaller.h" />
@@ -201,7 +200,6 @@
     <ClInclude Include="Common\GetAtr.h" />
     <ClInclude Include="Object\Item\ItemBase.h" />
     <ClInclude Include="Object\Item\ItemBox.h" />
-    <ClInclude Include="Object\Item\ItemManager.h" />
     <ClInclude Include="Object\Item\Laser.h" />
     <ClInclude Include="Object\Item\Missile.h" />
     <ClInclude Include="Manager\AnimMng.h" />
@@ -221,7 +219,6 @@
     <ClInclude Include="rapidxml\rapidxml_print.hpp" />
     <ClInclude Include="rapidxml\rapidxml_utils.hpp" />
     <ClInclude Include="Scene\GameScene.h" />
-    <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Scene\SceneMng.h" />
     <ClInclude Include="Scene\TitleScene.h" />

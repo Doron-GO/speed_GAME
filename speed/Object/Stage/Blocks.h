@@ -7,23 +7,26 @@
 
 class LoadMap;
 class Player;
-static int BLOCK_COUNT_MAX= 30;
 
 class Blocks
 {
 
 public:
-	Blocks(LoadMap& loadMap);
-	~Blocks();
 
-	void Update();
-	void Draw(Vector2DFloat cameraPos);
+	static constexpr int BLOCK_COUNT_MAX= 30;
+
 	struct Block
 	{
 		bool blockFlag_;
 		Collision col_;
 		int count_;
 	};
+
+	Blocks(LoadMap& loadMap);
+	~Blocks();
+
+	void Update();
+	void Draw(Vector2DFloat cameraPos);
 	std::list<Block> &GetBlockList();
 
 private:

@@ -28,10 +28,15 @@ public:
 	PlayerManager(bool& conclusion, Blocks& blocks);
 	~PlayerManager();
 
+	//更新
 	void Update(Input& input);
+	//初期化
 	void Init(int playerNum, ColList gruound, ColList Wall, ColList wire);
+	//描画
 	void Draw(Vector2DFloat cameraPos);
+
 	const Vector2DFloat& GetPlayerPos(int playerNum);
+
 	const Players GetPlayers();
 
 	//次のチェックポイントに一番近いプレイヤーを検索する(背bン頭プレイヤー)

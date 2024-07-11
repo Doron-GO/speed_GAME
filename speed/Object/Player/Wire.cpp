@@ -9,6 +9,8 @@ Wire::Wire(Player& player, ColList& list) :player_(player), col(list)
 	 Scale_ = { 0.0f,0.0f };
 	 vel_ = { 0.0f,0.0f };
 	 v_ = 0.0f;
+	 angle_ = 0.0f;
+	 fulcrum_pos = { 0.0f,0.0f };
 	 length_ = 0.0f;
 
 }
@@ -155,8 +157,6 @@ bool Wire::IsHitHook()
 {
 	for (const auto& col : col)
 	{	
-		//"x":2720,"y":2400
-
 		if (rayCast_.CheckCollision( col, fulcrum_))
 		{		
 			return false;

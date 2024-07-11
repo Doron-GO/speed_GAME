@@ -1,21 +1,18 @@
 #pragma once
 #include<map>
 #include<string>
-#include"../../Common/Vector2D.h"
-#include"../../Manager/AnimMng.h"
 #include"../../Object/Camera/Camera.h"
-#include"../../Object/Item/ItemManager.h"
 #include"../../Object/Item/ItemBase.h"
 #include"../../Object/Item/Missile.h"
 #include"../../Object/Stage/Blocks.h"
 #include"../../Common/Collision.h"
+#include"../../Common/Vector2D.h"
+#include"../../Manager/AnimMng.h"
 #include"../../Common/Raycast.h"
 #include"../../Input/Input.h"
 
-
 class Wire;
 class Blocks;
-
 
 class Player
 {
@@ -34,64 +31,98 @@ public:
 		RIGHT,
 		LEFT
 	};
-	enum class STATE
-	{
-		FALL,
-		JUMP,
-		MOVE,
-		WALLGRAB,
-		WALLJUMP,
-		SWING,
-		SWINGJUMP
-	};
 
-	struct COL
+	//矩形当たり判定情報
+	struct COL_RECT
 	{
 		Vector2DFloat min_;
 		Vector2DFloat max_;
-
 	};
 
 	Player(int playerNum, Blocks& blocks);
 	~Player();
+
+	//初期化
 	void Init(ColList colList, ColList wallColList, ColList wireColList);
+
+	//更新
 	void Update(Input& input);
 
 	//これにオフセット値を渡し描画をずらすようにする
 	void Draw(Vector2DFloat cameraPos);
 
-	ColList grndColList_;//特にギミックのない当たり判定
-	ColList wallcolList_;//壁ジャンプができる当たり判定
+	//特にギミックのない当たり判定リスト
+	ColList grndColList_;
 
+	//壁ジャンプができる当たり判定リスト
+	ColList wallcolList_;
+
+	//プレイヤー座標を取得する
 	const Vector2DFloat& GetPos();
+
+	//プレイヤーの足元から斜め上に出るベクトル
 	const Vector2DFloat GetDiagonallyVecVec();
+
+	//プレイヤーの移動方向
 	const Vector2DFloat GetMoveVec();
-	const Vector2DFloat GetMovePow();
-	Vector2DFloat pos_;//キャラの座標
-	Vector2DFloat movePow_;	//移動する力
-	int padNum_;//自分が何番目のPADを使っているか
-	DIR_LR dir_LR_;//キャラクターの向き
+
+	//プレイヤーの座標
+	Vector2DFloat pos_;
+
+	//移動量
+	Vector2DFloat movePow_;	
+
+	//自分が何番目のPADを使っているか
+	int padNum_;
+
+	//キャラクターの向き
+	DIR_LR dir_LR_;
+
+	//矩形情報
+	COL_RECT colRect_;
+
+	//現在持っているアイテム
+	ItemList IsItem();
 
 	//SwingJump状態に変更
 	void StartSwingJump();
+
 	//Swing状態に変更する
 	void StartSwing();
+
+	//プレイヤーを死亡状態にする
 	void Dead();
-	void Alive();
+
+	//プレイヤーが生存状態か判定
 	bool IsAlive();
-	ItemList IsItem();
+
 	void SetItemList(int itemNum);
+
+	//アイテムを所持状態にする
 	void SetItem(std::shared_ptr <ItemBase> item);
 
-	void TesItemDraw(Vector2DFloat cameraPos);
+	//アイテムの描画
+	void ItemDraw(Vector2DFloat cameraPos);
+
+	//プレイヤーに一番近い他プレイヤー座標を設定する
 	void SetTarget(Vector2DFloat targetPos);
+	
+	//勝利状態に移行させる
 	void Conclusion();
 
+	//プレイヤーの所持しているアイテムの情報を取得する
 	const std::shared_ptr<ItemBase> GetItem();
+
+	//プレイヤーをダメージくらい状態にする
 	void Damage(ItemBase::ITEM_TYPE type);
+
+	//勝利状態かどうかを返す
 	const bool IsWin();
-	COL col_;
+
 private:
+
+	//プレイヤーの初期位置
+	 const Vector2DFloat START_PLAYER_POSITION {400.0f, 2720.0f };
 
 	//爆発画像の枚数
 	static constexpr int EXPLOSION_IMG_NUM = 8;
@@ -111,9 +142,6 @@ private:
 
 	//爆発音管理配列
 	std::map<EXP_SOUND_TYPE, int> explosionSounds_;
-
-	//現在のプレイヤーの状態
-	STATE state_;
 
 	//現在のステートを表示する文字列(デバッグ用)
 	std::string nowState_;
@@ -143,7 +171,7 @@ private:
 	bool doubleJump_;
 
 	//自分が勝者かどうかを判定
-	bool winFlag_ = false;
+	bool winFlag_ ;
 
 	//爆発画像
 	int explosionImg_[EXPLOSION_IMG_NUM];
@@ -184,45 +212,34 @@ private:
 	//ダメージ状態の計測用変数
 	float damageCount_;
 
-	//プレイヤーの初期位置
-	 const Vector2DFloat START_PLAYER_POSITION {400.0f, 2720.0f };
-
-	//自分が今何ステート中なのか確認(デバッグ用)
-	void DebugStateCheck();
 
 	//ステート管理メンバ関数ポインタ
 	void (Player::* _state)(Input& input);
 
+	//アイテムの更新
+	void ItemUpdate(void);
+
 	//プレイヤーの状態
 	//左右移動：ジャンプ状態
 	void MoveState(Input& input);
-
 	//ジャンプ状態
 	void JumpState(Input& input);
-
 	//落下状態
 	void FallState(Input& input);
-
 	//ダメージ状態
 	void DamageState(Input& input);
-
 	//壁ずり落ち状態
-	void WallGrabPhese(Input& input);
-
+	void WallGrabState(Input& input);
 	//壁ジャンプ
-	void WallJumpPhese(Input& input);
-
+	void WallJumpState(Input& input);
 	//スイング状態
-	void SwingPhese(Input& input);
-
+	void SwingState(Input& input);
 	//スイングジャンプ状態
-	void SwingJumpPhese(Input& input);
-	
+	void SwingJumpState(Input& input);	
 	//勝利状態(地上)
-	void WinnerPhese(Input& input);
-	
+	void WinnerState(Input& input);
 	//勝利状態(空中)
-	void WinnerFallPhese(Input& input);
+	void WinnerFallState(Input& input);
 	
 	//勝利状態じゃないかどうか判定
 	bool IsWinner(void);

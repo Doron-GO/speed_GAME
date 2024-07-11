@@ -2,8 +2,8 @@
 #include<string>
 #include "Missile.h"
 
-const std::string ITEM_IMG_MISSILE_PASS = "Src/Img/Missile.png";
-const std::string EXP_IMG_EXPLOSION_PASS = "Src/Img/Explosion.png";
+const std::string PATH_IMG_ITEM_MISSILE = PATH_IMG+ "Missile.png";
+const std::string PATH_IMG_EXPLOSION= PATH_IMG + "Explosion.png";
 
 Missile::Missile()
 {
@@ -12,9 +12,9 @@ Missile::Missile()
 	_update = &Missile::WaitUpdate;
 	_draw = &Missile::MissileDraw;
 	type_ = ITEM_TYPE::MISSILE;
-	LoadDivGraph(EXP_IMG_EXPLOSION_PASS.c_str(), 11, 11, 1, 32, 31, explosionImg_);
+	LoadDivGraph(PATH_IMG_EXPLOSION.c_str(), 11, 11, 1, 32, 31, explosionImg_);
 	
-	missileImg_ = LoadGraph(ITEM_IMG_MISSILE_PASS.c_str());
+	missileImg_ = LoadGraph(PATH_IMG_ITEM_MISSILE.c_str());
 	explosionFlag_ = false;
 	activateFlag_ = false;
 }

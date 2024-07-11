@@ -8,6 +8,7 @@ namespace Default
 	constexpr T NANO = 1000000000;
 	constexpr Time::DeltaType MAX_DELTA = 0.5;
 	constexpr Time::DeltaType TIME_RATE = 1.0;
+
 }
 
 Time::Time()
