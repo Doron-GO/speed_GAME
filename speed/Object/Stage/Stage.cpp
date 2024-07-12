@@ -6,9 +6,9 @@
 #include"../../Config.h"
 #include"Blocks.h"
 
-const std::string PATH_IMG_BACK = PATH_SOUND + PATH_IMG+"Stageimage/siro.png";
-const std::string PATH_JSON_TSX = PATH_SOUND + PATH_IMG+"stageTSX_.json";
-const std::string PATH_JSON_STAGE = PATH_SOUND + PATH_IMG+"stage_2.json";
+const std::string PATH_IMG_BACK =  PATH_IMG+"Stageimage/siro.png";
+const std::string PATH_JSON_TSX = PATH_JSON +"stageTSX_.json";
+const std::string PATH_JSON_STAGE = PATH_JSON +"stage_2.json";
 
 Stage::Stage() 
 {	

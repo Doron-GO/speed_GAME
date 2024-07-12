@@ -16,9 +16,12 @@ public:
 	virtual void Draw() ;
 protected:
 	SceneMng& sceneManager_;
+
 	Transitor& sceneTransitor_;
 	int screenID_;
+
 	Vector2DFloat drawOffset_;
+
 	Vector2DFloat screenSize_={1600.0f,1000.0f};
 };
 

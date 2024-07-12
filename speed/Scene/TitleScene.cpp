@@ -1,7 +1,6 @@
 #include "TitleScene.h"
 #include "GameScene.h"
 #include "SceneMng.h"
-#include "ResultScene.h"
 #include"Transition/TileTransitor.h"
 #include"../Object/Time/DeltaTime.h"
 
@@ -9,9 +8,9 @@
 
 const std::string PATH_SOUND_CURSOR = PATH_SOUND + "Cursor.mp4";
 const std::string PATH_SOUND_PUSH = PATH_SOUND + "Push.mp4";
-const std::string PATH_IMG_PLAYER_NUM_SELECT = PATH_UI + "Number_of_Players.png";
-const std::string PATH_IMG_TITLE = PATH_UI + "Start.png";
-const std::string PATH_IMG_START = PATH_UI + "Number_of_Players.png";
+const std::string PATH_IMG_PLAYER_NUM_SELECT = PATH_UI + "Select.png";
+const std::string PATH_IMG_TITLE = PATH_UI + "Title.png";
+const std::string PATH_IMG_START = PATH_UI + "Start.png";
 
 #pragma endregion
 

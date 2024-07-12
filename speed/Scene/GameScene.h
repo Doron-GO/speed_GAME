@@ -1,5 +1,6 @@
 #pragma once
 #include<memory>
+#include<map>
 #include<vector>
 #include"../Object/Camera/OutSide.h"
 #include"../Object/Camera/Camera.h"
@@ -16,6 +17,7 @@ class TimeCount;
 class GameScene :
     public Scene
 {
+
 public:
 
     GameScene(SceneMng& manager, int number_of_Players, Transitor& transit);

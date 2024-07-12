@@ -5,7 +5,7 @@
 #include"../Object/Time/DeltaTime.h"
 #include "GameScene.h"
 #include "TitleScene.h"
-#include "SceneMng.h"
+#include "SceneMng.h"l
 #include"../Config.h"
 
 #pragma region MyRegion
@@ -30,6 +30,7 @@ playerNum_(number_of_Players),_update(&GameScene::MultiPlayUpdate)
 		SinglePlayModeChange();
 	}
 	SoundInit();
+	ImageInit();
 	selectModeNum_ = 0;
 	camera_->Update();
 	deltaTime.Reset();
@@ -105,9 +106,9 @@ void GameScene::ReadyGoDraw(void)
 void GameScene::SoundInit(void)
 {
 	sounds_.emplace(SOUND_TYPE::CURSOR, LoadSoundMem(PATH_SOUND_CURSOR.c_str()));
-	sounds_.emplace(SOUND_TYPE::PUSH, PATH_SOUND_PUSH.c_str());
-	sounds_.emplace(SOUND_TYPE::GO, PATH_SOUND_GO.c_str());
-	sounds_.emplace(SOUND_TYPE::READY, PATH_SOUND_READY.c_str());
+	sounds_.emplace(SOUND_TYPE::PUSH, LoadSoundMem(PATH_SOUND_PUSH.c_str()));
+	sounds_.emplace(SOUND_TYPE::GO, LoadSoundMem(PATH_SOUND_GO.c_str()));
+	sounds_.emplace(SOUND_TYPE::READY, LoadSoundMem(PATH_SOUND_READY.c_str()));
 }
 
 void GameScene::ImageInit(void)
