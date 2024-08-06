@@ -54,14 +54,19 @@ private:
 
     //ステージ
     std::unique_ptr<Stage> stage_;
+
     //カメラ
     std::unique_ptr<Camera> camera_;
+
     //死亡範囲
     std::unique_ptr<OutSide> outSide_;
+
     //チェックポイント
     std::unique_ptr<CheckPoint> checkPoint_;
+
     //プレイヤーの管理
     std::unique_ptr<PlayerManager>playerManager_;
+
     //時間計測
     std::unique_ptr<TimeCount>timeCount_;
 

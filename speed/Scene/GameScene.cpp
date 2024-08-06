@@ -5,8 +5,9 @@
 #include"../Object/Time/DeltaTime.h"
 #include "GameScene.h"
 #include "TitleScene.h"
-#include "SceneMng.h"l
+#include "SceneMng.h"
 #include"../Config.h"
+
 
 #pragma region MyRegion
 
@@ -35,6 +36,7 @@ playerNum_(number_of_Players),_update(&GameScene::MultiPlayUpdate)
 	camera_->Update();
 	deltaTime.Reset();
 	startTime_ = deltaTime.GetElapsedTime();
+
 }
 
 GameScene::~GameScene()
@@ -148,7 +150,6 @@ void GameScene::Draw()
 	sceneTransitor_.Draw();
 }
 
-
 void GameScene::DecideOnTheBeginning()
 {
 	playerManager_->SearchFirstPlayer(checkPoint_->GetCheckPoint2());
@@ -158,8 +159,10 @@ void GameScene::DecideOnTheBeginning()
 	//ƒJƒƒ‰’Ç]‘ÎÛ‚ð•ÏX‚·‚éB
 	if (oldLeder != newLeder)
 	{
-		camera_->ReConnect(playerManager_->GetPlayers()[(int)newLeder]);
-		camera_->StateChanging((int)newLeder);
+		camera_->ReConnect(playerManager_->GetPlayers()[static_cast<int>(newLeder)]);
+
+		camera_->StateChanging(static_cast<int>(newLeder));
+
 		outSide_->StateChanging();
 	}
 	playerManager_->UpdateFirstPlayerNum();
